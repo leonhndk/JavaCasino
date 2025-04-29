@@ -1,37 +1,52 @@
 package de.esg.java.ausbildung.honl.game;
 
+import java.math.BigDecimal;
+
 public class Player extends AbstractPlayer {
 
-    private float balance;
-    private float bet;
+    private BigDecimal balance;
+    private BigDecimal bet;
     private final GameView gameView;
 
-    public Player(float startingBalance, GameView gameView) {
+    public Player(BigDecimal startingBalance, GameView gameView) {
         this.balance = startingBalance;
         this.gameView = gameView;
+        this.bet = BigDecimal.ZERO;
     }
 
-    public void placeBet(float bet) {
-        if (bet > balance) {
-            System.out.println("Insufficient balance to place this bet.");
-        } else {
-            this.bet = bet;
-            balance -= bet;
-            System.out.printf("Bet placed: %.2f. Remaining balance: %.2f\n", bet, balance);
+    public void placeBet(BigDecimal bet) {
+        if (bet.compareTo(balance) > 0) {
+            throw new IllegalArgumentException("Insufficient balance to place bet!");
         }
+        this.bet = bet;
+        balance = balance.subtract(bet);
     }
 
-    public void chargeToBalance(float amount) {
-        if (amount < 0) {
-            System.out.println("Cannot charge a negative amount.");
-        } else {
-            balance -= amount;
-            System.out.printf("Charged to balance: %.2f. New balance: %.2f\n", amount, balance);
-        }
+    public BigDecimal getCurrentBet() {
+        return bet;
+    }
+
+    public  BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void winBet() {
+        balance = balance.add(bet).add(bet);
+        bet = BigDecimal.ZERO;
+    }
+
+
+    public void pushBet() {
+        balance = balance.add(bet);
+        bet = BigDecimal.ZERO;
+    }
+
+    public void loseBet() {
+        bet = BigDecimal.ZERO;
     }
 
     @Override
-    public void takeTurn(Deck deck, GameEngine gameEngine) {
+    public void takeTurn (Deck deck, GameEngine gameEngine) {
         System.out.printf("Your turn! Current hand value: %d\n", hand.getHandValue());
     }
 }

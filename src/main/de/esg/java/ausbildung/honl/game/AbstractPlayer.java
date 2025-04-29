@@ -9,4 +9,8 @@ public abstract class AbstractPlayer {
     }
 
     public abstract void takeTurn (Deck deck, GameEngine gameEngine);
+
+    public void clearHand() {
+        hand.clearHand();
+    }
 }

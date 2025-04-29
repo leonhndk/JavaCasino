@@ -1,7 +1,6 @@
 package de.esg.java.ausbildung.honl.game;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,15 +16,28 @@ public class Hand {
     }
 
     public int getHandValue () {
-        return 0;
+        int aces = 0;
+        int sum = 0;
+        for (Card card : cards) {
+            if (card.getRank() == Rank.ACE) {
+                aces++;
+            }
+            sum += card.getCardValue();
+        }
+        while (aces > 0 && sum <= 21) {
+            sum -= 10;
+            aces--;
+        }
+        return sum;
     }
 
+
     public boolean isBlackjack () {
-        return false;
+        return cards.size() == 2 && getHandValue() == 21;
     }
 
     public boolean isBust () {
-        return false;
+        return getHandValue() > 21;
     }
 
     public void clearHand () {
