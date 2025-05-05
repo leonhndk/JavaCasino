@@ -11,8 +11,9 @@ public class Hand {
     public void addCard(Card card) {
         cards.add(card);
     }
+
     public List<Card> getCards() {
-        return Collections.unmodifiableList(cards);
+    return Collections.unmodifiableList(cards);
     }
 
     public int getHandValue () {
@@ -42,5 +43,24 @@ public class Hand {
 
     public void clearHand () {
         cards.clear();
+    }
+
+    @Override
+    public String toString () {
+        StringBuilder sb = new StringBuilder();
+        for (Card card : cards) {
+            sb.append(card.toString()).append("\t");
+        }
+        return sb.toString().trim();
+    }
+
+    public String consoleString (boolean hideFirstCard) {
+        StringBuilder sb = new StringBuilder();
+        for (Card card : cards) {
+            if(hideFirstCard)
+            sb.append(card.consoleString());
+        }
+        sb.append("Total hand value: ").append(getHandValue());
+        return sb.toString().trim();
     }
 }

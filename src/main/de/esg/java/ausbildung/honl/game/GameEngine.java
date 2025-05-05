@@ -1,29 +1,51 @@
 package de.esg.java.ausbildung.honl.game;
 
+import java.math.BigDecimal;
+
 public class GameEngine {
 
-    private final AbstractPlayer player;
-    private final AbstractPlayer dealer;
-    private final Deck deck;
+    private final Player player;
+    private final Dealer dealer;
+    private Deck deck;
     private final GameView gameView;
+    private final int RESHUFFLE_THRESHOLD = 20;
 
-
-    public GameEngine(AbstractPlayer player, AbstractPlayer dealer, Deck deck, GameView gameView) {
+    public GameEngine(Player player, Dealer dealer, Deck deck, GameView gameView) {
         this.player = player;
         this.dealer = dealer;
         this.deck = deck;
         this.gameView = gameView;
     }
 
-    public void startRound() {
-       player.clearHand();
-       dealer.clearHand();
+    public void playGame() {
+        gameView.displayWelcomeMsg();
+        boolean playAgain = true;
+        boolean sufficientFunds = true;
+        while (playAgain && sufficientFunds) {
+            // check for depletion of card stack
+            if (checkReshuffle()) {
+                gameView.showMessage(Constants.RESHUFFLE_MSG);
+            }
+            // show player balance
+            gameView.showPlayerBalance(player.getBalance());
 
-       player.getHand().addCard(deck.drawCard());
-       dealer.getHand().addCard(deck.drawCard());
-       player.getHand().addCard(deck.drawCard());
-       dealer.getHand().addCard(deck.drawCard());
+        }
+    }
 
+    private boolean checkReshuffle () {
+      if (deck.remainingCards() < RESHUFFLE_THRESHOLD) {
+          this.deck = new Deck(2, true);
+          return true;
+      }
+      return false;
+    }
+
+    private boolean checkSufficientFunds(BigDecimal amount) {
+        if (player.getBalance().compareTo(amount) < 0) {
+            gameView.showMessage(Constants.INSUFFICIENT_FUNDS_MSG);
+            return false;
+        }
+        return true;
     }
 
 }

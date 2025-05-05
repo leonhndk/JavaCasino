@@ -21,6 +21,10 @@ public class Card {
         return rank;
     }
 
+    public  Suit getSuit() {
+        return suit;
+    }
+
 //    /**
 //     * @param cardDescription returns a string that is exactly 19 characters long by adding whitespace if needed
 //     */
@@ -35,13 +39,14 @@ public class Card {
 //        return normalizedDescription.toString();
 //    }
 
-    @Override
-    public String toString() {
+
+    public String consoleString() {
         String suitIcon = suit.getIconColor() + suit.getIcon() + "\u001B[0m";
         return suitIcon + rank.getLabel() + "\t";
     }
 
-    public String saveString() {
+    @Override
+    public String toString() {
         return rank.name() + " of " + suit.name();
     }
 

@@ -7,11 +7,13 @@ public class Player extends AbstractPlayer {
     private BigDecimal balance;
     private BigDecimal bet;
     private final GameView gameView;
+    private final String playerName;
 
-    public Player(BigDecimal startingBalance, GameView gameView) {
+    public Player(BigDecimal startingBalance, GameView gameView, String playerName) {
         this.balance = startingBalance;
         this.gameView = gameView;
         this.bet = BigDecimal.ZERO;
+        this.playerName = playerName;
     }
 
     public void placeBet(BigDecimal bet) {
@@ -22,11 +24,12 @@ public class Player extends AbstractPlayer {
         balance = balance.subtract(bet);
     }
 
+
     public BigDecimal getCurrentBet() {
         return bet;
     }
 
-    public  BigDecimal getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
@@ -35,7 +38,11 @@ public class Player extends AbstractPlayer {
         bet = BigDecimal.ZERO;
     }
 
-
+/*
+    * This method is called when the game ties,
+    * player is "refunded" bet to balance
+    *
+    */
     public void pushBet() {
         balance = balance.add(bet);
         bet = BigDecimal.ZERO;
@@ -43,6 +50,10 @@ public class Player extends AbstractPlayer {
 
     public void loseBet() {
         bet = BigDecimal.ZERO;
+    }
+
+    public String getPlayerName() {
+        return playerName;
     }
 
     @Override
