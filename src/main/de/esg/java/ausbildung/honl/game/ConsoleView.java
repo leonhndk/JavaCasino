@@ -1,14 +1,16 @@
 package de.esg.java.ausbildung.honl.game;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Scanner;
+import java.util.WeakHashMap;
 
 public class ConsoleView implements GameView {
 
 private final Scanner scanner;
 
-    public ConsoleView(Scanner scanner) {
-        this.scanner = scanner;
+    public ConsoleView() {
+        this.scanner = new Scanner(System.in);
     }
 
     /**
@@ -25,11 +27,15 @@ private final Scanner scanner;
     @Override
     public String promptPlayerName() {
         boolean validInput = false;
-        String name = "Player";
+        String name = "";
+        System.out.println("Please enter your name:");
         while (!validInput) {
             name = scanner.nextLine();
-            System.out.println("Are you happy with the name " + name + "? (y/n)");
-            if (promptYesNo("")) {
+            if (name.isBlank()) {
+                System.out.println("Invalid name! Please try again.");
+                continue;
+            }
+            if (promptYesNo("Are you happy with the name " + name + "?")) {
                 validInput = true;
             }
         }
@@ -49,7 +55,7 @@ private final Scanner scanner;
      */
     @Override
     public void showPlayerBalance(BigDecimal balance) {
-
+        System.out.println("Your current balance is: " + balance + " €");
     }
 
     /**
@@ -76,35 +82,36 @@ private final Scanner scanner;
     }
 
     /**
-     * @param playerHand
+     * @param player
      */
-    @Override
-    public void showPlayerHand(Hand playerHand) {
+    public void showPlayerHand(Player player) {
+        System.out.printf("%s's hand: ", player.getPlayerName());
         StringBuilder sb = new StringBuilder();
-        for (Card card : playerHand.getCards()) {
-            sb.append(card.consoleString());
+        for (Card card : player.getHand().getCards()) {
+            sb.append(card.toString()).append("\t");
         }
-        sb.append("Hand value: ").append(playerHand.getHandValue());
+        sb.append("Hand value: ").append(player.getHand().getHandValue());
         System.out.println(sb);
     }
 
     /**
-     * @param dealerHand
+     * @param dealer
      * @param hideFirstCard
      */
     @Override
-    public void showDealerHand(Hand dealerHand, boolean hideFirstCard) {
+    public void showDealerHand(Dealer dealer, boolean hideFirstCard) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < dealerHand.getCards().size(); i++) {
+        List<Card> cards = dealer.getHand().getCards();
+        System.out.print("Dealer's hand: ");
+        for (int i = 0; i < cards.size(); i++) {
             if (hideFirstCard && i == 0) {
                 sb.append("???" + "\t");
             } else {
-                sb.append(dealerHand.getCards().get(i).consoleString());
+                sb.append(cards.get(i).toString()).append("\t");
             }
-            i++;
         }
         if (!hideFirstCard) {
-        sb.append("Hand value: ").append(dealerHand.getHandValue());
+        sb.append("Hand value: ").append(dealer.getHand().getHandValue());
         }
         System.out.println(sb);
     }

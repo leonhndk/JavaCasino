@@ -1,29 +1,44 @@
 package de.esg.java.ausbildung.honl.game;
 
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 
 public class Player extends AbstractPlayer {
 
     private BigDecimal balance;
     private BigDecimal bet;
-    private final GameView gameView;
-    private final String playerName;
+    private String playerName;
 
-    public Player(BigDecimal startingBalance, GameView gameView, String playerName) {
+    public Player(BigDecimal startingBalance) {
         this.balance = startingBalance;
-        this.gameView = gameView;
         this.bet = BigDecimal.ZERO;
+        playerName = "Player";
+    }
+
+    public BigDecimal placeBet(BigDecimal bet) {
+        if (checkSufficientFunds(bet)) {
+            balance = balance.subtract(bet);
+            return bet;
+        } else {
+            return null;
+        }
+    }
+
+    public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
 
-    public void placeBet(BigDecimal bet) {
-        if (bet.compareTo(balance) > 0) {
-            throw new IllegalArgumentException("Insufficient balance to place bet!");
-        }
-        this.bet = bet;
-        balance = balance.subtract(bet);
+    public String getPlayerName() {
+        return playerName;
     }
 
+    public int getHandValue() {
+        return getHand().getHandValue();
+    }
+
+    public boolean checkSufficientFunds(BigDecimal amount) {
+        return balance.compareTo(amount) >= 0;
+    }
 
     public BigDecimal getCurrentBet() {
         return bet;
@@ -33,9 +48,8 @@ public class Player extends AbstractPlayer {
         return balance;
     }
 
-    public void winBet() {
-        balance = balance.add(bet).add(bet);
-        bet = BigDecimal.ZERO;
+    public void winBet(BigDecimal totalBets) {
+        balance = balance.add(totalBets).add(totalBets);
     }
 
 /*
@@ -52,12 +66,15 @@ public class Player extends AbstractPlayer {
         bet = BigDecimal.ZERO;
     }
 
-    public String getPlayerName() {
-        return playerName;
+    public boolean isBust (){
+        return getHand().getHandValue() > 21;
     }
-
     @Override
     public void drawCard(Deck deck) {
-        System.out.printf("Your turn! Current hand value: %d\n", hand.getHandValue());
+        try {
+            getHand().addCard(deck.removeCard());
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+        }
     }
 }

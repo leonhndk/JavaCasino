@@ -58,7 +58,7 @@ public class Hand {
         StringBuilder sb = new StringBuilder();
         for (Card card : cards) {
             if(hideFirstCard)
-            sb.append(card.consoleString());
+                sb.append(card.consoleString());
         }
         sb.append("Total hand value: ").append(getHandValue());
         return sb.toString().trim();

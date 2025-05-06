@@ -45,7 +45,7 @@ public class Deck {
     /**
      * draws card from the top of the deck, removes it from deck
      */
-    public Card drawCard() {
+    public Card removeCard() {
         if (cardStack.isEmpty()) {
             throw new NoSuchElementException("Card stack is empty");
         }

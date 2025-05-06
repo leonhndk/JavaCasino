@@ -13,9 +13,9 @@ public interface GameView {
 
     BigDecimal promptPlayerBet(BigDecimal maxBet);
 
-    void showPlayerHand(Hand playerHand);
+    void showPlayerHand(Player player);
 
-    void showDealerHand(Hand dealerHand, boolean hideFirstCard);
+    void showDealerHand(Dealer dealer, boolean hideFirstCard);
 
     boolean promptPlayerAction();
 
