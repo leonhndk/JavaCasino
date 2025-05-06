@@ -19,4 +19,5 @@ public class Constants {
 	static final double BUY_IN = 0.50;
 	static final String RESHUFFLE_MSG = "Deck depleted, reshuffling...";
 	static final String INSUFFICIENT_FUNDS_MSG = "Insufficient funds to process payment.";
+	static final String INITIAL_DEAL_MSG = "Dealing initial cards...";
 }

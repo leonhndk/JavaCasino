@@ -24,11 +24,11 @@ public class GameEngine {
         while (playAgain && sufficientFunds) {
             // check for depletion of card stack
             if (checkReshuffle()) {
-                gameView.showMessage(Constants.RESHUFFLE_MSG);
+                gameView.displayMessage(Constants.RESHUFFLE_MSG);
             }
             // show player balance
             gameView.showPlayerBalance(player.getBalance());
-
+            // initial Deal
         }
     }
 
@@ -42,10 +42,20 @@ public class GameEngine {
 
     private boolean checkSufficientFunds(BigDecimal amount) {
         if (player.getBalance().compareTo(amount) < 0) {
-            gameView.showMessage(Constants.INSUFFICIENT_FUNDS_MSG);
+            gameView.displayMessage(Constants.INSUFFICIENT_FUNDS_MSG);
             return false;
         }
         return true;
+    }
+
+    private void initialDeal() {
+        gameView.displayMessage(Constants.INITIAL_DEAL_MSG);
+        // player draws card
+        player.drawCard(deck);
+        // dealer draws card (hidden)
+        // player draws card
+        // dealer draws card (visible)
+
     }
 
 }

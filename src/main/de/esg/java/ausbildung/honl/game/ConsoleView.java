@@ -121,7 +121,7 @@ private final Scanner scanner;
      * @param message
      */
     @Override
-    public void showMessage(String message) {
+    public void displayMessage(String message) {
         System.out.println(message);
     }
 

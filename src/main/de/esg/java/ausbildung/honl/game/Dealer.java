@@ -3,7 +3,7 @@ package de.esg.java.ausbildung.honl.game;
 public class Dealer extends AbstractPlayer {
 
     @Override
-    public void takeTurn(Deck deck, GameEngine gameEngine) {
+    public void drawCard(Deck deck) {
         if (hand.getHandValue() < 17) {
             // Dealer must hit if hand value is less than 17
             hand.addCard(deck.drawCard());

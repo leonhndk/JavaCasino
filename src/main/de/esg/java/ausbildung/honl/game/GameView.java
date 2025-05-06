@@ -19,7 +19,7 @@ public interface GameView {
 
     boolean promptPlayerAction();
 
-    void showMessage(String message);
+    void displayMessage(String message);
 
     boolean promptPlayAgain();
 

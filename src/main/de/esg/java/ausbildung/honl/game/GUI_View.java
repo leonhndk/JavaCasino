@@ -72,7 +72,7 @@ public class GUI_View implements GameView {
      * @param message
      */
     @Override
-    public void showMessage(String message) {
+    public void displayMessage(String message) {
 
     }
 

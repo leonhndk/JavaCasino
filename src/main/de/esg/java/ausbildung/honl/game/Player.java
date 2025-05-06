@@ -57,7 +57,7 @@ public class Player extends AbstractPlayer {
     }
 
     @Override
-    public void takeTurn (Deck deck, GameEngine gameEngine) {
+    public void drawCard(Deck deck) {
         System.out.printf("Your turn! Current hand value: %d\n", hand.getHandValue());
     }
 }
