@@ -54,7 +54,7 @@ public class GameEngine {
             }
             // player turn
             player.placeBet(gameView.promptPlayerBet(Constants.MAX_BET));
-            gameView.showPlayerBalance(player.getBalance());
+            takeTurn(player);
 
             }
 
@@ -119,15 +119,12 @@ public class GameEngine {
             if (handValue < 17) {
                 gameView.displayMessage("Player forced to hit!");
                 player.drawCard(deck);
-                gameView.showCard
-            } else if (handValue > 21) {
-                gameView.displayMessage("Player is bust!");
-                turnOver = true;
+                gameView.showCardDrawn(player);
             } else {
                 boolean hit = gameView.promptPlayerAction();
                 if (hit) {
                     player.drawCard(deck);
-                    gameView.showPlayerHand(player);
+                    gameView.showCardDrawn(player);
                 } else {
                     turnOver = true;
                 }

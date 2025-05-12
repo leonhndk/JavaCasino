@@ -121,7 +121,7 @@ private final Scanner scanner;
      */
     @Override
     public boolean promptPlayerAction() { // possibly redundant, use promptYesNo instead to ask for hit/stand
-        return false;
+        return true;
     }
 
     /**
@@ -158,8 +158,10 @@ private final Scanner scanner;
         return false;
     }
 
-    public void showCardDrawn (Card card, String playerName) {
-        System.out.printf("%s drew %s", playerName, card.consoleString());
+    public void showCardDrawn (Player player) {
+        List<Card> cards = player.getHand().getCards();
+
+        System.out.printf("%s drew %s", player.getPlayerName(), cards.get(cards.size() - 1).consoleString());
     }
 
     public void closeScanner() {

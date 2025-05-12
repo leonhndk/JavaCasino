@@ -24,4 +24,6 @@ public interface GameView {
     boolean promptPlayAgain();
 
     boolean promptYesNo(String message);
+
+    void showCardDrawn(Player player);
 }

@@ -93,4 +93,12 @@ public class GUI_View implements GameView {
     public boolean promptYesNo(String message) {
         return false;
     }
+
+    /**
+     * @param player
+     */
+    @Override
+    public void showCardDrawn(Player player) {
+
+    }
 }
