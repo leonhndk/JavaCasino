@@ -22,11 +22,11 @@ public class GameEngine {
     public void playGame() {
         gameInit();
         boolean playAgain = true;
-        boolean sufficientFunds = true;
         BigDecimal bet = BigDecimal.ZERO;
-        while (playAgain && sufficientFunds) {
+        while (playAgain) {
             player.clearHand();
             dealer.clearHand();
+            totalBets = BigDecimal.ZERO;
             // check for depletion of card stack
             if (checkReshuffle()) {
                 gameView.displayMessage(Constants.RESHUFFLE_MSG);
@@ -36,10 +36,9 @@ public class GameEngine {
                 gameView.displayMessage(Constants.INSUFFICIENT_FUNDS_MSG);
                 break;
             }
-            else {
-                totalBets = totalBets.add(bet);
-                gameView.showPlayerBalance(player.getBalance());
-            }
+
+            totalBets = totalBets.add(Constants.BUY_IN);
+
             // show player balance
             gameView.showPlayerBalance(player.getBalance());
             // initial Deal
@@ -50,16 +49,46 @@ public class GameEngine {
             gameView.showDealerHand(dealer, false);
             // check for blackjack
             if (checkBlackjack(player) || checkBlackjack(dealer)) {
-                break;
+                playAgain = gameView.promptPlayAgain();
+                continue;
             }
             // player turn
-            player.placeBet(gameView.promptPlayerBet(Constants.MAX_BET));
-            takeTurn(player);
-
+            boolean playerTurnResult = playerTurn(player);
+            if (!player.isBust()) {
+                dealerTurn();
             }
+            determineWinner();
+            playAgain = gameView.promptPlayAgain();
+            }
+        // game is over
+        gameView.displayMessage("Game finished, thank you for playing!");
+        if (gameView instanceof ConsoleView) {
+            ((ConsoleView) gameView).closeScanner();
+        }
+    }
 
+    private void determineWinner() {
+        // use list of players when implementing multiplayer
+        int playerHandValue = player.getHand().getHandValue();
+        int dealerHandValue = dealer.getHand().getHandValue();
+        if (player.isBust()) {
+            gameView.displayMessage("Player busts! Dealer wins.");
+            player.loseBet();
+        } else if (dealer.getHand().isBust()) {
+            gameView.displayMessage("Dealer busts! Player wins!");
+            player.winBet(totalBets);
+        } else if (playerHandValue > dealerHandValue) {
+            gameView.displayMessage("Player wins!");
+            player.winBet(totalBets);
+        } else if (playerHandValue < dealerHandValue) {
+            gameView.displayMessage("Dealer wins!");
+            player.loseBet();
+        } else {
+            gameView.displayMessage("It's a push (tie)!");
+            player.pushBet();
+        }
 
-
+        gameView.showPlayerBalance(player.getBalance());
     }
 
     private boolean checkReshuffle () {
@@ -102,37 +131,57 @@ public class GameEngine {
         return false;
     }
 
-    private boolean takeTurn (Player player) {
-
-        gameView.showDealerHand(dealer, false);
-        player.placeBet(gameView.promptPlayerBet(Constants.MAX_BET));
-        gameView.showPlayerBalance(player.getBalance());
-
-        boolean turnOver = false;
-        while (!turnOver) {
-            int handValue = player.getHandValue();
-            gameView.showPlayerHand(player);
+    private boolean playerTurn(Player player) {
+        while (true) {
+            // Check for bust
             if (player.isBust()) {
-                gameView.displayMessage("Player is bust!");
-                break;
+                gameView.displayMessage(player.getPlayerName() + " is bust!");
+                return false;
+            }
+
+            // Display current hand and prompt for bet
+            gameView.showPlayerHand(player);
+
+            // Prompt for additional bet
+            BigDecimal additionalBet = gameView.promptPlayerBet(
+                    player.getBalance().min(Constants.MAX_BET));
+
+            // Place additional bet
+            if (additionalBet != null && additionalBet.compareTo(BigDecimal.ZERO) > 0) {
+                if (player.placeBet(additionalBet) == null) {
+                    gameView.displayMessage(Constants.INSUFFICIENT_FUNDS_MSG);
+                    break;
                 }
-            if (handValue < 17) {
-                gameView.displayMessage("Player forced to hit!");
+                totalBets = totalBets.add(additionalBet);
+            }
+
+            // Forced hit for hands lower than 17
+            if (player.getHandValue() < 17) {
+                gameView.displayMessage(player.getPlayerName() + " forced to hit!");
+                player.drawCard(deck);
+                gameView.showCardDrawn(player);
+                continue;
+            }
+
+            // Prompt for action
+            boolean wantsToHit = gameView.promptPlayerAction();
+            if (wantsToHit) {
                 player.drawCard(deck);
                 gameView.showCardDrawn(player);
             } else {
-                boolean hit = gameView.promptPlayerAction();
-                if (hit) {
-                    player.drawCard(deck);
-                    gameView.showCardDrawn(player);
-                } else {
-                    turnOver = true;
-                }
+                break;
             }
         }
-
-        return false;
+        return true;
     }
 
+    private void dealerTurn() {
+        gameView.showDealerHand(dealer, false);
+        while (dealer.getHand().getHandValue() < 17) {
+            dealer.drawCard(deck);
+            gameView.displayMessage("Dealer draws a card...");
+            gameView.showCardDrawn(dealer);
+        }
+    }
 
 }

@@ -25,5 +25,5 @@ public interface GameView {
 
     boolean promptYesNo(String message);
 
-    void showCardDrawn(Player player);
+    void showCardDrawn(AbstractPlayer abstractPlayer);
 }

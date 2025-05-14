@@ -95,10 +95,10 @@ public class GUI_View implements GameView {
     }
 
     /**
-     * @param player
+     * @param abstractPlayer
      */
     @Override
-    public void showCardDrawn(Player player) {
+    public void showCardDrawn(AbstractPlayer abstractPlayer) {
 
     }
 }

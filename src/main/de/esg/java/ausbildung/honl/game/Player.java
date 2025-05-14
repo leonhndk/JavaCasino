@@ -69,12 +69,17 @@ public class Player extends AbstractPlayer {
     public boolean isBust (){
         return getHand().getHandValue() > 21;
     }
+
+
     @Override
-    public void drawCard(Deck deck) {
+    public Card drawCard(Deck deck) {
         try {
-            getHand().addCard(deck.removeCard());
+            Card card = deck.removeCard();
+            getHand().addCard(card);
+            return card;
         } catch (NoSuchElementException e) {
             e.printStackTrace();
+            return null;
         }
     }
 }

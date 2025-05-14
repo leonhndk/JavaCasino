@@ -3,7 +3,6 @@ package de.esg.java.ausbildung.honl.game;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Scanner;
-import java.util.WeakHashMap;
 
 public class ConsoleView implements GameView {
 
@@ -84,6 +83,7 @@ private final Scanner scanner;
     /**
      * @param player
      */
+    // make method abstract?
     public void showPlayerHand(Player player) {
         System.out.printf("%s's hand: ", player.getPlayerName());
         StringBuilder sb = new StringBuilder();
@@ -121,7 +121,7 @@ private final Scanner scanner;
      */
     @Override
     public boolean promptPlayerAction() { // possibly redundant, use promptYesNo instead to ask for hit/stand
-        return true;
+        return promptYesNo("Do you wish to draw another card?");
     }
 
     /**
@@ -158,10 +158,12 @@ private final Scanner scanner;
         return false;
     }
 
-    public void showCardDrawn (Player player) {
-        List<Card> cards = player.getHand().getCards();
-
-        System.out.printf("%s drew %s", player.getPlayerName(), cards.get(cards.size() - 1).consoleString());
+    public void showCardDrawn (AbstractPlayer abstractPlayer) {
+        if (abstractPlayer instanceof Player) {
+            System.out.printf("%s drew %s", ((Player) abstractPlayer).getPlayerName(), abstractPlayer.getHand().getLastCard().toString());
+        } else if (abstractPlayer instanceof Dealer) {
+            System.out.printf("%s drew %s", "Dealer", abstractPlayer.getHand().getLastCard().toString());
+        }
     }
 
     public void closeScanner() {

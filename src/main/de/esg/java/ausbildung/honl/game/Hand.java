@@ -16,6 +16,15 @@ public class Hand {
     return Collections.unmodifiableList(cards);
     }
 
+    public Card getLastCard() {
+        try {
+            return cards.get(cards.size() - 1);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public int getHandValue () {
         int aces = 0;
         int sum = 0;
