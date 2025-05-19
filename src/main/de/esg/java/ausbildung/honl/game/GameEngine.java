@@ -49,7 +49,7 @@ public class GameEngine {
             gameView.showDealerHand(dealer, false);
             // check for blackjack
             if (checkBlackjack(player) || checkBlackjack(dealer)) {
-                playAgain = gameView.promptPlayAgain();
+                playAgain = gameView.promptYesNo(Constants.PLAY_AGAIN_MSG);
                 continue;
             }
             // player turn
@@ -58,10 +58,16 @@ public class GameEngine {
                 dealerTurn();
             }
             determineWinner();
-            playAgain = gameView.promptPlayAgain();
+            playAgain = gameView.promptYesNo(Constants.PLAY_AGAIN_MSG);
             }
         // game is over
         gameView.displayMessage("Game finished, thank you for playing!");
+        gameView.showPlayerBalance(player.getBalance());
+        if (SaveUtils.saveGame(deck, player.getPlayerName(), player.getBalance())){
+            gameView.displayMessage("Game saved successfully.");
+        } else {
+            gameView.displayMessage("Game save failed.");
+        }
         if (gameView instanceof ConsoleView) {
             ((ConsoleView) gameView).closeScanner();
         }
@@ -92,7 +98,7 @@ public class GameEngine {
     }
 
     private boolean checkReshuffle () {
-      if (deck.remainingCards() < RESHUFFLE_THRESHOLD) {
+      if (deck.getSize() < RESHUFFLE_THRESHOLD) {
           this.deck = new Deck(2, true);
           return true;
       }
@@ -111,6 +117,20 @@ public class GameEngine {
 
     private void gameInit() {
         gameView.displayWelcomeMsg();
+        if (SaveUtils.gameSaveExists()) {
+            if (gameView.promptYesNo(Constants.LOAD_GAME_MSG)) {
+                SaveData saveData = SaveUtils.loadSavedGame(Constants.filePath);
+                if (saveData != null) {
+                    player.setBalance(saveData.balance());
+                    deck.addCards(saveData.cardStack(), true);
+                    gameView.displayMessage("Game loaded successfully.");
+                }
+                else {
+                    gameView.displayMessage("Failed to load game! Continuing with new game...");
+                }
+            }
+
+        }
         player.setPlayerName(gameView.promptPlayerName());
         gameView.showPlayerBalance(player.getBalance());
     }
@@ -147,6 +167,7 @@ public class GameEngine {
                     player.getBalance().min(Constants.MAX_BET));
 
             // Place additional bet
+            // check might be unnecessary, as placeBet() already checks for sufficient funds
             if (additionalBet != null && additionalBet.compareTo(BigDecimal.ZERO) > 0) {
                 if (player.placeBet(additionalBet) == null) {
                     gameView.displayMessage(Constants.INSUFFICIENT_FUNDS_MSG);
@@ -155,7 +176,7 @@ public class GameEngine {
                 totalBets = totalBets.add(additionalBet);
             }
 
-            // Forced hit for hands lower than 17
+            // Force hit for hands < 17
             if (player.getHandValue() < 17) {
                 gameView.displayMessage(player.getPlayerName() + " forced to hit!");
                 player.drawCard(deck);
@@ -164,7 +185,7 @@ public class GameEngine {
             }
 
             // Prompt for action
-            boolean wantsToHit = gameView.promptPlayerAction();
+            boolean wantsToHit = gameView.promptYesNo("Do you wish to draw another card?");
             if (wantsToHit) {
                 player.drawCard(deck);
                 gameView.showCardDrawn(player);

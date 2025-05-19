@@ -7,8 +7,6 @@ public interface GameView {
 
     String promptPlayerName();
 
-    void displayBuyIn();
-
     void showPlayerBalance(BigDecimal balance);
 
     BigDecimal promptPlayerBet(BigDecimal maxBet);
@@ -17,11 +15,7 @@ public interface GameView {
 
     void showDealerHand(Dealer dealer, boolean hideFirstCard);
 
-    boolean promptPlayerAction();
-
     void displayMessage(String message);
-
-    boolean promptPlayAgain();
 
     boolean promptYesNo(String message);
 

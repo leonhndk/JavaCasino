@@ -31,22 +31,17 @@ private final Scanner scanner;
         while (!validInput) {
             name = scanner.nextLine();
             if (name.isBlank()) {
-                System.out.println("Invalid name! Please try again.");
+                System.out.println("Please re-enter your name.");
                 continue;
             }
             if (promptYesNo("Are you happy with the name " + name + "?")) {
                 validInput = true;
             }
+            else {
+                System.out.println("Please re-enter your name.");
+            }
         }
         return name;
-    }
-
-    /**
-     *
-     */
-    @Override
-    public void displayBuyIn() {
-        System.out.println("Buy in of " + Constants.BUY_IN + " € will be charged to your balance.");
     }
 
     /**
@@ -57,27 +52,31 @@ private final Scanner scanner;
         System.out.println("Your current balance is: " + balance + " €");
     }
 
-    /**
-     * @return
-     */
     @Override
     public BigDecimal promptPlayerBet(BigDecimal maxBet) {
         BigDecimal bet = BigDecimal.ZERO;
         System.out.println("Please specify amount you wish to bet (Maximum bet: " + maxBet + "€).");
-        while (scanner.hasNext()) {
-            String input = scanner.next();
+        while (true) {
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("Invalid input! Please enter an amount in the format: x.xx");
+                continue;
+            }
             try {
                 bet = new BigDecimal(input);
+                if (bet.compareTo(BigDecimal.ZERO) < 0) {
+                    System.out.println("Bet must be a positive value!");
+                    continue;
+                }
                 if (bet.compareTo(maxBet) > 0) {
-                    System.out.println("Amount too high, continuing with maximum bet");
+                    System.out.println("Amount too high, continuing with maximum bet of " + maxBet + " €");
                     bet = maxBet;
                 }
                 return bet;
             } catch (NumberFormatException nfe) {
-                System.out.println("Invalid input! Please enter only the amount in the following format: x.xx");
+                System.out.println("Invalid input! Please enter only the amount in the format: x.xx");
             }
         }
-        return bet;
     }
 
     /**
@@ -117,24 +116,11 @@ private final Scanner scanner;
     }
 
     /**
-     * @return boolean whether player wants to hit or stand
-     */
-    @Override
-    public boolean promptPlayerAction() { // possibly redundant, use promptYesNo instead to ask for hit/stand
-        return promptYesNo("Do you wish to draw another card?");
-    }
-
-    /**
      * @param message
      */
     @Override
     public void displayMessage(String message) {
         System.out.println(message);
-    }
-
-    @Override
-    public boolean promptPlayAgain() {
-        return promptYesNo("Do you want to play again?");
     }
 
     /**
@@ -144,18 +130,16 @@ private final Scanner scanner;
     @Override
     public boolean promptYesNo(String message) {
         if(!message.isBlank()) {
-            System.out.println(message + " (y/n): ");
+            System.out.println(message + " (Y/N): ");
         }
-        while (scanner.hasNext()) {
-            String input = scanner.next().substring(0, 1).toUpperCase();
-            if (!input.equals("Y") && !input.equals("N")) {
+        while (true) {
+            String input = scanner.nextLine().trim().toUpperCase();
+            if (input.isEmpty() || (!input.startsWith("Y") && !input.startsWith("N"))) {
                 System.out.println("Invalid choice! Please enter yes or no.");
+                continue;
             }
-            if (input.equals("Y") || input.equals("N")) {
-                return input.equals("Y");
-            }
+            return input.startsWith("Y");
         }
-        return false;
     }
 
     public void showCardDrawn (AbstractPlayer abstractPlayer) {

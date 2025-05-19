@@ -24,13 +24,6 @@ public class GUI_View implements GameView {
      *
      */
     @Override
-    public void displayBuyIn() {
-
-    }
-    /**
-     *
-     */
-    @Override
     public void showPlayerHand (Player player) {
         System.out.printf("%s's hand: %s", player.getPlayerName(), player.getHand().toString());
 
@@ -60,14 +53,6 @@ public class GUI_View implements GameView {
     public void showDealerHand(Dealer dealer, boolean hideFirstCard) {
     }
 
-    /**
-     * @return
-     */
-    @Override
-    public boolean promptPlayerAction() {
-
-        return false;
-    }
 
     /**
      * @param message
@@ -75,14 +60,6 @@ public class GUI_View implements GameView {
     @Override
     public void displayMessage(String message) {
 
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public boolean promptPlayAgain() {
-        return false;
     }
 
     /**

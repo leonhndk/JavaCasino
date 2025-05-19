@@ -28,8 +28,12 @@ public class Deck {
         this.cardStack = new ArrayDeque<>(fullDeck);
     }
 
-    public int remainingCards() {
+    public int getSize() {
         return cardStack.size();
+    }
+
+    public ArrayList<Card> getCards() {
+        return new ArrayList<>(cardStack);
     }
 
     public void shuffleStack() {
@@ -41,6 +45,13 @@ public class Deck {
 
     public boolean isEmpty() {
         return cardStack.isEmpty();
+    }
+
+    public void addCards(ArrayList<Card> cards, boolean replace) {
+        if (replace) {
+            cardStack.clear();
+        }
+        cardStack.addAll(cards);
     }
     /**
      * draws card from the top of the deck, removes it from deck

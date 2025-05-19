@@ -48,6 +48,10 @@ public class Player extends AbstractPlayer {
         return balance;
     }
 
+    public void setBalance(BigDecimal newBalance) {
+        balance = newBalance;
+    }
+
     public void winBet(BigDecimal totalBets) {
         balance = balance.add(totalBets).add(totalBets);
     }

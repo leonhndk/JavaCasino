@@ -26,18 +26,17 @@ public class Hand {
     }
 
     public int getHandValue () {
-        int aces = 0;
         int sum = 0;
         for (Card card : cards) {
-            if (card.getRank() == Rank.ACE) {
-                aces++;
-            }
             sum += card.getCardValue();
         }
-        while (aces > 0 && sum <= 21) {
-            sum -= 10;
-            aces--;
+        // Check for double aces
+        if (cards.size() >= 2 &&
+                cards.get(0).getRank() == Rank.ACE &&
+                cards.get(1).getRank() == Rank.ACE) {
+            sum -= 20;
         }
+
         return sum;
     }
 
