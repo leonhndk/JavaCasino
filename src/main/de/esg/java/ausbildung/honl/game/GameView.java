@@ -2,6 +2,7 @@ package de.esg.java.ausbildung.honl.game;
 
 import java.math.BigDecimal;
 
+
 public interface GameView {
     void displayWelcomeMsg();
 
