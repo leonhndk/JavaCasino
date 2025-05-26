@@ -144,9 +144,9 @@ private final Scanner scanner;
 
     public void showCardDrawn (AbstractPlayer abstractPlayer) {
         if (abstractPlayer instanceof Player) {
-            System.out.printf("%s drew %s", ((Player) abstractPlayer).getPlayerName(), abstractPlayer.getHand().getLastCard().toString());
+            System.out.printf("%s drew %s\n", ((Player) abstractPlayer).getPlayerName(), abstractPlayer.getHand().getLastCard().toString());
         } else if (abstractPlayer instanceof Dealer) {
-            System.out.printf("%s drew %s", "Dealer", abstractPlayer.getHand().getLastCard().toString());
+            System.out.printf("%s drew %s\n", "Dealer", abstractPlayer.getHand().getLastCard().toString());
         }
     }
 

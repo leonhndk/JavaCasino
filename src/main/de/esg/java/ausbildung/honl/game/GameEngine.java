@@ -9,7 +9,6 @@ public class GameEngine {
     private Deck deck;
     private final GameView gameView;
     private BigDecimal totalBets;
-    private final int RESHUFFLE_THRESHOLD = 20;
 
     public GameEngine(GameView gameView) {
         this.player = new Player(Constants.STARTING_BALANCE);
@@ -22,7 +21,6 @@ public class GameEngine {
     public void playGame() {
         gameInit();
         boolean playAgain = true;
-        BigDecimal bet = BigDecimal.ZERO;
         while (playAgain) {
             player.clearHand();
             dealer.clearHand();
@@ -98,7 +96,8 @@ public class GameEngine {
     }
 
     private boolean checkReshuffle () {
-      if (deck.getSize() < RESHUFFLE_THRESHOLD) {
+        int reshuffleThreshold = 20;
+        if (deck.getSize() < reshuffleThreshold) {
           this.deck = new Deck(2, true);
           return true;
       }

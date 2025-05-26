@@ -1,8 +1,18 @@
 package de.esg.java.ausbildung.honl.game;
 
+import javax.swing.*;
 import java.math.BigDecimal;
 
 public class GUI_View implements GameView {
+
+    private JFrame frame;
+
+    public GUI_View() {
+        frame = new JFrame("Blackjack Game");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setVisible(true);
+    }
 
     /**
      *

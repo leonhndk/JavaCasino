@@ -19,7 +19,7 @@ public class SaveUtils {
 		ArrayList<Card> cardStack;
 		// check file before trying to parse cards and balance, savedGame may be null
 
-        if (!validateSaveData(savedGame)) {
+        if (savedGame == null || !validateSaveData(savedGame)) {
 			// handle logging here or in gameView instance?
 			return null;
 		}
@@ -69,10 +69,9 @@ public class SaveUtils {
 	 * @return card object
 	 */
 	private static Card readCard(String card) {
-		// split card card along whitespace e.g. THREE | of | CLUBS
+		// split card along whitespace e.g. THREE | of | CLUBS
 		String[] arr = card.split("\\s");
 		if (arr.length != 3) {
-			System.out.println("Error! Save file corrupted");
 			return null;
 		}
 		String rankStr = arr[0];
