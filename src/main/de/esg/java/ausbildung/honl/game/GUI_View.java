@@ -1,17 +1,61 @@
 package de.esg.java.ausbildung.honl.game;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.math.BigDecimal;
 
 public class GUI_View implements GameView {
 
-    private JFrame frame;
+    private JFrame mainWindow;
+    private GameEngine gameEngine; // Using GameEngine as per your current setup
+    private JPanel gamePanel;
+    private JPanel buttonsPanel;
+    private JLabel playerScoreLabel;
+    private JLabel dealerScoreLabel;
+    private JLabel playerBalanceLabel;
+    private JTable logTable; // New: For logging
+    private JScrollPane logPane; // New: To make the log scrollable
+
 
     public GUI_View() {
-        frame = new JFrame("Blackjack Game");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setVisible(true);
+        initGUI();
+    }
+
+    public void setGameEngine (GameEngine gameEngine) {
+        this.gameEngine = gameEngine;
+    }
+
+    private void initGUI() {
+        mainWindow = new JFrame("ESG Casino - Blackjack");
+        mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainWindow.setVisible(true);
+        mainWindow.setSize(1400, 1000);
+
+        mainWindow.setLayout(new BorderLayout());
+        gamePanel = new JPanel(new FlowLayout());
+        playerScoreLabel = new JLabel("Player Score: 0");
+        dealerScoreLabel = new JLabel("Dealer Score: 0");
+        playerBalanceLabel = new JLabel("Player Balance: $0.00");
+        gamePanel.add(playerScoreLabel);
+        gamePanel.add(dealerScoreLabel);
+        gamePanel.add(playerBalanceLabel);
+        buttonsPanel = new JPanel(new FlowLayout());
+        JButton newGameButton = new JButton("New Game");
+        JButton loadGameButton = new JButton("Load Game");
+        JButton saveGameButton = new JButton("Save Game");
+        buttonsPanel.add(newGameButton);
+        buttonsPanel.add(loadGameButton);
+        buttonsPanel.add(saveGameButton);
+        logPane = new JScrollPane();
+        logTable = new JTable(15, 3);
+        logPane.add(logTable);
+        mainWindow.add(logPane, BorderLayout.SOUTH);// Example: 15 rows, 3 columns
+        mainWindow.add(buttonsPanel, BorderLayout.NORTH);
+        mainWindow.add(gamePanel, BorderLayout.CENTER);
+        mainWindow.pack();
+        // Initialize components like gamePanel, buttonsPanel, dealerScoreLabel, playerBalanceLabel, logTable, logPane
+        // This method can be called in the constructor or wherever appropriate
     }
 
     /**
