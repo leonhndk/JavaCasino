@@ -1,13 +1,21 @@
 package de.esg.java.ausbildung.honl.game;
 
+import javax.swing.SwingUtilities;
+
 public class Main {
     public static void main(String[] args) {
-        //ConsoleView view = new ConsoleView();
-        // Uncomment the line above to use ConsoleView instead of GUI_View
+        // Run the GUI creation and game logic on the Event Dispatch Thread
+        SwingUtilities.invokeLater(() -> {
+            MainFrame view = new MainFrame();
+            GameEngine gameEngine = new GameEngine(view);
 
+            // Now that the view is created, make it visible
+            view.setVisible(true);
 
-        GUI_View view = new GUI_View();
-        GameEngine gameEngine = new GameEngine(view);
-        gameEngine.playGame();
+            // Start the game
+            // Note: Long-running tasks like playGame() can freeze the GUI.
+            // You might later want to run the game loop in a separate thread.
+            gameEngine.playGame();
+        });
     }
 }
