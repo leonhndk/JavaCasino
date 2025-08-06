@@ -3,60 +3,59 @@ package de.esg.java.ausbildung.honl.game;
 import java.awt.*;
 import java.math.BigDecimal;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 
 public class MainFrame extends JFrame implements GUI_View {
-
     private JTable logTable;
-    private JLabel playerBalance;
-    private final JLabel playerHandLabel = new JLabel("Player Hand:");
-    private final JLabel dealerHandLabel = new JLabel("Dealer Hand:");
-    private final JLabel playerHandValueLabel = new JLabel("Player Hand Value:");
-    private final JLabel dealerHandValueLabel = new JLabel("Dealer Hand Value:");
-    private JLabel dealerHandValue;
-    private JLabel playerHandValue;
-    private JPanel playerCardsPanel;
-    private JPanel dealerCardsPanel;
+    private final Color CASINO_GREEN = new Color(0x2d543d);
+    private final Color CASINO_RED = new Color(0x952d28);
+    private final Color CASINO_GOLD = new Color(0xD4AF37);
+    private final JLabel playerBalanceLabel = new JLabel("Player Balance: 100.00 €");
+    private final JLabel playerHandValueLabel = new JLabel("Value: 0");
+    private final JLabel dealerHandValueLabel = new JLabel("Value: 20");
+    private final JPanel playerCardsPanel;
+    private final JPanel dealerCardsPanel;
+
 
     public MainFrame () {
-        setTitle("Blackjack Game");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
-        setLocationRelativeTo(null);
         // Initialize components that need to be created in the constructor
-
-
         String[] columnNames = {"Timestamp", "Player", "Action"};
-        this.logTable = new JTable(new DefaultTableModel(columnNames, 10));
+        DefaultTableModel logTableModel = new DefaultTableModel(columnNames, 10);
+        this.logTable = new JTable(logTableModel);
         this.playerCardsPanel = createCardsPanel();
         this.dealerCardsPanel = createCardsPanel();
-
         initializeGUI();
 
     }
 
     public void initializeGUI() {
-        Container contentPane = getContentPane();
-        ((JPanel) contentPane).setBorder(new EmptyBorder(5, 5, 5, 5));
+        setTitle("Blackjack Game");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        Container contentPane = getContentPane();
+        //((JPanel) contentPane).setBorder(new EmptyBorder(5, 5, 5, 5));
         JPanel topPanel = createTopPanel();
         JPanel mainPanel = createMainPanel();
         JPanel logPanel = createLogPanel();
+
         contentPane.add(topPanel, BorderLayout.NORTH);
         contentPane.add(mainPanel, BorderLayout.CENTER);
         contentPane.add(logPanel, BorderLayout.SOUTH);
-
-
-        // Additional GUI components can be added here
+       // contentPane.setBackground(POKER_GREEN);
+        pack();
+        setMinimumSize(getPreferredSize()); // prevent resizing below preferred size to prevent cut off components
+        System.out.println("Calculated Minimum Size: " + getPreferredSize());
+        setLocationRelativeTo(null);
     }
     private JPanel createLogPanel() {
         JPanel logPanel = new JPanel(new BorderLayout());
-        String [] columnNames = {"Timestamp", "Player", "Action"};
-        logTable = new JTable(new DefaultTableModel(columnNames, 10));
+
+        //logPanel.setBorder(BorderFactory.createTitledBorder("Game Log"));
         logTable.setEnabled(false);
         JScrollPane scrollPane = new JScrollPane(logTable);
+
+        scrollPane.setPreferredSize(new Dimension(50, 200));
         logPanel.add(scrollPane, BorderLayout.CENTER);
         return logPanel;
     }
@@ -64,139 +63,73 @@ public class MainFrame extends JFrame implements GUI_View {
     private JPanel createMainPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createTitledBorder("Game Table"));
-
+        JLabel playerHandLabel = new JLabel("Player's Hand");
+        playerHandLabel.setForeground(CASINO_GOLD);
+        JLabel dealerHandLabel = new JLabel("Dealer's Hand");
+        dealerHandLabel.setForeground(CASINO_GOLD);
+        mainPanel.setBackground(CASINO_RED);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(0, 5, 0, 5);
 
-        // Row 0: Player's Hand
+        // Column 1: Player's and Dealer's Hand Labels: centered, no fill, no weight
+        // Row 1 (Player)
+        gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weighty = 1.0; // Give this row vertical weight, so it can expand
-
-        // Col 0: "Player Hand:" label (no weight, doesn't stretch)
-        gbc.gridx = 0;
-        gbc.weightx = 0;
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weighty = 1;
+        gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.NONE;
-        mainPanel.add(playerHandLabel, gbc);
-
-        // Col 1: Player cards panel (takes all horizontal and vertical weight)
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(playerCardsPanel, gbc);
-
-        // Col 2: Player hand value (no weight, doesn't stretch)
-        gbc.gridx = 2;
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.WEST;
-        mainPanel.add(playerHandValue, gbc);
-
-        // --- Row 1: Dealer's Hand ---
+        mainPanel.add(playerHandLabel);
+        // Row 2 (Dealer)
         gbc.gridy = 1;
-        // weighty is already 1.0 from the previous row setting
-
-        // Col 0: "Dealer Hand:" label
-        gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weighty = 1;
         mainPanel.add(dealerHandLabel, gbc);
 
-        // Col 1: Dealer cards panel
+        // Column 2: cards panel, flexible width, anchor left, fill
+        // Row 1 (Player)
         gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
         gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(dealerCardsPanel, gbc);
-
-        // Col 2: Dealer hand value
-        gbc.gridx = 2;
-        gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
-        mainPanel.add(dealerHandValue, gbc);
-
+        mainPanel.add(playerCardsPanel, gbc);
+        // Row 2 (Dealer)
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.WEST;
+        mainPanel.add(dealerCardsPanel, gbc);
+        // Column 3: Hand Value Labels: no fill, no weight
+        // Row 1: Player hand value label
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.NONE;
+        mainPanel.add(playerHandValueLabel, gbc);
+        // Row 2: Dealer hand value label
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.NONE;
+        mainPanel.add(dealerHandValueLabel, gbc);
         return mainPanel;
-//        playerHandValue = new JLabel("0");
-//        dealerHandValue = new JLabel("1");
-//        dealerCardsPanel = createCardsPanel();
-//        playerCardsPanel = createCardsPanel();
-//        GridBagConstraints gbc = new GridBagConstraints();
-//        gbc.insets = new Insets(5, 5, 5, 5);
-//        // label for player hand
-//        gbc.gridx = 0;
-//        gbc.gridy = 0;
-//        gbc.weightx = 0; // Allow horizontal stretching
-//        // gbc.weighty = 0.0; // Don't give extra vertical space to the header
-//        gbc.fill = GridBagConstraints.NONE;
-//        mainPanel.add(playerHandLabel, gbc);
-//        // label for dealer hand
-//        gbc.gridx = 0;
-//        gbc.gridy = 1;
-//        gbc.weightx = 0; // Allow horizontal stretching
-//        //gbc.weighty = 0.0; // Don't give extra vertical space to the header
-//        gbc.fill = GridBagConstraints.NONE;
-//        mainPanel.add(dealerHandLabel, gbc);
-//        // player cards panel
-//        gbc.gridx = 1;
-//        gbc.gridy = 0;
-//        gbc.weightx = 1.0; // Allow horizontal stretching
-//        gbc.weighty = 1.0; // extra vertical space to the header
-//        gbc.fill = GridBagConstraints.BOTH;
-//        mainPanel.add(playerCardsPanel, gbc);
-//        // dealer cards panel
-//        gbc.gridx = 1;
-//        gbc.gridy = 1;
-//        gbc.weightx = 1.0; // Allow horizontal stretching
-//        gbc.weighty = 1.0; // extra vertical space to the header
-//        gbc.fill = GridBagConstraints.BOTH;
-//        mainPanel.add(dealerCardsPanel, gbc);
-//        // player hand value label
-//        gbc.gridx = 2;
-//        gbc.gridy = 0;
-//        gbc.weightx = 0; // Allow horizontal stretching
-//        //gbc.weighty = 1.0; // extra vertical space to the header
-//        gbc.fill = GridBagConstraints.NONE;
-//        mainPanel.add(playerHandValueLabel, gbc);
-//        // dealer hand value label
-//        gbc.gridx = 2;
-//        gbc.gridy = 1;
-//        gbc.weightx = 1.0; // Allow horizontal stretching
-//        //gbc.weighty = 1.0; // extra vertical space to the header
-//        gbc.fill = GridBagConstraints.NONE;
-//        mainPanel.add(dealerHandValueLabel, gbc);
-//        // player hand value
-//        gbc.gridx = 3;
-//        gbc.gridy = 0;
-//        gbc.weightx = 0; // Allow horizontal stretching
-//        //gbc.weighty = 1.0;
-//        gbc.fill = GridBagConstraints.NONE;
-//        mainPanel.add(playerHandValue, gbc);
-//        // dealer hand value
-//        gbc.gridx = 3;
-//        gbc.gridy = 1;
-//        gbc.weightx = 0; // Allow horizontal stretching
-//        //gbc.weighty = 1.0;
-//        gbc.fill = GridBagConstraints.NONE;
-//        mainPanel.add(dealerHandValue, gbc);
-//        return mainPanel;
     }
     private JPanel createCardsPanel() {
-        JPanel cardsPanel = new JPanel(new FlowLayout());
-        cardsPanel.setBackground(Color.BLUE);
+        JPanel cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5,5 ));
+        cardsPanel.setBackground(CASINO_GREEN);
+        cardsPanel.setPreferredSize(new Dimension(100, 150));
         return cardsPanel;
     }
 
     private JPanel createTopPanel() {
-        JPanel topPanel = new JPanel(new FlowLayout());
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton startButton = new JButton("Start Game");
         JButton saveButton = new JButton("Save Game");
         JButton loadButton = new JButton("Load Game");
-        JPanel balancePanel = new JPanel(new FlowLayout());
-        JLabel playerBalanceLabel = new JLabel("Current Balance: 0.00 €");
-        playerBalance = new JLabel("10.00 €");
-        balancePanel.add(playerBalanceLabel);
-        balancePanel.add(playerBalance);
+        topPanel.setBackground(CASINO_RED);
         topPanel.add(startButton);
         topPanel.add(saveButton);
         topPanel.add(loadButton);
-        topPanel.add(balancePanel);
+        topPanel.add(new JSeparator(SwingConstants.VERTICAL));
+        topPanel.add(playerBalanceLabel);
         return topPanel;
     }
 
