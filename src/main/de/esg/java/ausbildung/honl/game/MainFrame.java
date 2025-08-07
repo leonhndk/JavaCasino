@@ -7,15 +7,16 @@ import javax.swing.table.DefaultTableModel;
 
 
 public class MainFrame extends JFrame implements GUI_View {
-    private JTable logTable;
+    private final JTable logTable;
     private final Color CASINO_GREEN = new Color(0x2d543d);
     private final Color CASINO_RED = new Color(0x952d28);
     private final Color CASINO_GOLD = new Color(0xD4AF37);
-    private final JLabel playerBalanceLabel = new JLabel("Player Balance: 100.00 €");
-    private final JLabel playerHandValueLabel = new JLabel("Value: 0");
-    private final JLabel dealerHandValueLabel = new JLabel("Value: 20");
+    private final JLabel playerBalanceLabel;
+    private final JLabel playerHandValueLabel;
+    private final JLabel dealerHandValueLabel;
     private final JPanel playerCardsPanel;
     private final JPanel dealerCardsPanel;
+    private CardRenderer cardRenderer;
 
 
     public MainFrame () {
@@ -25,6 +26,12 @@ public class MainFrame extends JFrame implements GUI_View {
         this.logTable = new JTable(logTableModel);
         this.playerCardsPanel = createCardsPanel();
         this.dealerCardsPanel = createCardsPanel();
+        this.playerHandValueLabel = new JLabel("Player Hand Value: 0");
+        this.playerHandValueLabel.setForeground(CASINO_GOLD);
+        this.dealerHandValueLabel = new JLabel("Dealer Hand Value: 0");
+        this.dealerHandValueLabel.setForeground(CASINO_GOLD);
+        this.playerBalanceLabel = new JLabel("Player Balance: 0.00 €");
+        this.playerBalanceLabel.setForeground(CASINO_GOLD);
         initializeGUI();
 
     }
@@ -50,11 +57,9 @@ public class MainFrame extends JFrame implements GUI_View {
     }
     private JPanel createLogPanel() {
         JPanel logPanel = new JPanel(new BorderLayout());
-
         //logPanel.setBorder(BorderFactory.createTitledBorder("Game Log"));
         logTable.setEnabled(false);
         JScrollPane scrollPane = new JScrollPane(logTable);
-
         scrollPane.setPreferredSize(new Dimension(50, 200));
         logPanel.add(scrollPane, BorderLayout.CENTER);
         return logPanel;
@@ -69,7 +74,7 @@ public class MainFrame extends JFrame implements GUI_View {
         dealerHandLabel.setForeground(CASINO_GOLD);
         mainPanel.setBackground(CASINO_RED);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(0, 5, 0, 5);
+        gbc.insets = new Insets(0, 10, 0, 10);
 
         // Column 1: Player's and Dealer's Hand Labels: centered, no fill, no weight
         // Row 1 (Player)
@@ -116,6 +121,12 @@ public class MainFrame extends JFrame implements GUI_View {
         JPanel cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5,5 ));
         cardsPanel.setBackground(CASINO_GREEN);
         cardsPanel.setPreferredSize(new Dimension(100, 150));
+        Card kingHearts = new Card(Rank.KING, Suit.HEARTS);
+        Card tenDiamonds = new Card(Rank.TEN, Suit.DIAMONDS);
+        JPanel kingHeartsView = CardRenderer.createCardView(kingHearts);
+        JPanel tenDiamondsView = CardRenderer.createCardView(tenDiamonds);
+        cardsPanel.add(kingHeartsView);
+        cardsPanel.add(tenDiamondsView);
         return cardsPanel;
     }
 
