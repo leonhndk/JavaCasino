@@ -5,6 +5,9 @@ import javax.swing.SwingUtilities;
 public class Main {
     public static void main(String[] args) {
         // Run the GUI creation and game logic on the Event Dispatch Thread
+        Suit suit = Suit.HEARTS; // Example usage of Suit enum
+        System.out.println(suit.name());
+        System.out.println(suit.getName());
         SwingUtilities.invokeLater(() -> {
             MainFrame view = new MainFrame();
             GameEngine gameEngine = new GameEngine(view);

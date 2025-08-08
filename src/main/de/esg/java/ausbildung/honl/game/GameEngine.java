@@ -91,7 +91,6 @@ public class GameEngine {
             gameView.displayMessage("It's a push (tie)!");
             player.pushBet();
         }
-
         gameView.showPlayerBalance(player.getBalance());
     }
 

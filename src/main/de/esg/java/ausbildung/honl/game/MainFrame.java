@@ -26,6 +26,9 @@ public class MainFrame extends JFrame implements GUI_View {
         this.logTable = new JTable(logTableModel);
         this.playerCardsPanel = createCardsPanel();
         this.dealerCardsPanel = createCardsPanel();
+        playerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.KING, Suit.HEARTS))); // temporary cards for testing
+        dealerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.FIVE, Suit.SPADES)));
+        dealerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.NINE, Suit.CLUBS)));
         this.playerHandValueLabel = new JLabel("Player Hand Value: 0");
         this.playerHandValueLabel.setForeground(CASINO_GOLD);
         this.dealerHandValueLabel = new JLabel("Dealer Hand Value: 0");
@@ -45,7 +48,6 @@ public class MainFrame extends JFrame implements GUI_View {
         JPanel topPanel = createTopPanel();
         JPanel mainPanel = createMainPanel();
         JPanel logPanel = createLogPanel();
-
         contentPane.add(topPanel, BorderLayout.NORTH);
         contentPane.add(mainPanel, BorderLayout.CENTER);
         contentPane.add(logPanel, BorderLayout.SOUTH);
@@ -83,7 +85,7 @@ public class MainFrame extends JFrame implements GUI_View {
         gbc.weighty = 1;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.NONE;
-        mainPanel.add(playerHandLabel);
+        mainPanel.add(playerHandLabel, gbc);
         // Row 2 (Dealer)
         gbc.gridy = 1;
         gbc.weighty = 1;
@@ -118,15 +120,10 @@ public class MainFrame extends JFrame implements GUI_View {
         return mainPanel;
     }
     private JPanel createCardsPanel() {
-        JPanel cardsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5,5 ));
+        CardsPanelLayout cardsPanelLayout = new CardsPanelLayout(8); // use custom layout to show hands
+        JPanel cardsPanel = new JPanel(cardsPanelLayout);
         cardsPanel.setBackground(CASINO_GREEN);
-        cardsPanel.setPreferredSize(new Dimension(100, 150));
-        Card kingHearts = new Card(Rank.KING, Suit.HEARTS);
-        Card tenDiamonds = new Card(Rank.TEN, Suit.DIAMONDS);
-        JPanel kingHeartsView = CardRenderer.createCardView(kingHearts);
-        JPanel tenDiamondsView = CardRenderer.createCardView(tenDiamonds);
-        cardsPanel.add(kingHeartsView);
-        cardsPanel.add(tenDiamondsView);
+        cardsPanel.setBorder(BorderFactory.createLineBorder(CASINO_GOLD, 2));
         return cardsPanel;
     }
 
