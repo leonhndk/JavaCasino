@@ -1,53 +1,80 @@
 package de.esg.java.ausbildung.honl.game;
 
-import javax.swing.text.Position;
 import java.awt.*;
 
 public class CardsPanelLayout implements LayoutManager {
 
-    private int spacing; // Spacing between cards
+    private final int spacing = 8; // Spacing between cards
     private final int maxCardCount = 6; // Maximum number of cards in a hand, more than 6 statistically unlikely
-    private final double aspectRatio = 6.0 / 9.0; // Aspect ratio for card layout
+    private final int horizontalPadding = 14;
+    private final int verticalPadding = 8;
 
 
-    public CardsPanelLayout(int spacing) {
-        this.spacing = spacing;
-    }
-
+    /**
+     * Layout within the cards panel, arrange cards in a single row with spacing
+     */
     @Override
     public void layoutContainer(Container parent) {
-        int count = parent.getComponentCount();
-        // no cards before first deal, no layout needed
-        if (count == 0) {
-            return;
+        double aspectRatio = 2.0 / 3.0; // Aspect ratio for card (60 * 90 pixels)
+        if (parent.getComponentCount() == 0) {
+            return; // no components to layout
         }
         Insets insets = parent.getInsets();
         // get available width and height accounting for insets
-        int availableWidth = parent.getWidth() - insets.left - insets.right;
-        int availableHeight = parent.getHeight() - insets.top - insets.bottom;
-        // +0.5: half of card width for padding on the right
-        double maxComponentWidth = availableWidth / (maxCardCount + 0.5);
-        int maxComponentSpacing = 0;
-        // calculate maximum spacing if more than one card in panel
-        if (count > 1) {
-            maxComponentSpacing = (int) ((count - 1) * spacing);
+        // Padding on the left and right of the panel
+        int availableWidth = parent.getWidth() - insets.left - insets.right - horizontalPadding * 2;
+        // Padding on the top and bottom of the panel
+        int availableHeight = parent.getHeight() - insets.top - insets.bottom - verticalPadding * 2;
+        // calculate maximum spacing and card size
+        int totalSpacing = (maxCardCount - 1) * spacing;
+        int cardWidth = (availableWidth - totalSpacing) / maxCardCount;
+        int cardHeight = (int) (cardWidth / aspectRatio);
+
+        // set max height to panel height if card height exceeds available height
+        if (cardHeight > availableHeight) {
+            cardHeight = availableHeight;
+            cardWidth = (int) (cardHeight * aspectRatio);
         }
-        // components and spacing should not resize after adding another component
-        int componentWidth = (availableWidth - maxComponentSpacing) / maxCardCount;
-        int componentHeight = (int) (componentWidth / aspectRatio);
-        // Adjust component height if too tall
-        if (componentHeight > availableHeight) {
-            componentHeight = availableHeight; // set height to maximum available height
-            componentHeight = (int) (componentHeight * aspectRatio);
-        }
+
         // Center vertically
-        int yPosition = insets.top + (availableHeight - componentHeight);
+        int yPosition = insets.top + verticalPadding + (availableHeight - cardHeight) / 2;
         // order from left to right
-        int xPosition = insets.left;
+        int xPosition = insets.left + horizontalPadding;
         for (Component comp : parent.getComponents()) {
-            comp.setBounds(xPosition, yPosition, componentWidth, componentHeight);
-            xPosition += componentHeight + spacing;
+            comp.setBounds(xPosition, yPosition, cardWidth, cardHeight);
+            xPosition += cardWidth + spacing;
         }
+    }
+
+    /**
+     * Returns the preferred size of the container based on hardcoded card dimension to determine window size
+     *
+     * @param parent the container
+     * @return the preferred size of the container
+     */
+    @Override
+    public Dimension preferredLayoutSize(Container parent) {
+        Insets insets = parent.getInsets();
+        // Get the default card size from CardRenderer.
+        Dimension defaultCardSize = CardRenderer.getCardDimension();
+        int cardWidth = defaultCardSize.width;
+        int cardHeight = defaultCardSize.height;
+        // Calculate total width needed to display max number of cards
+        int totalGapsWidth = (maxCardCount - 1) * spacing;
+        int totalCardsWidth = (maxCardCount * cardWidth) + totalGapsWidth;
+        int totalWidth = totalCardsWidth + horizontalPadding * 2;
+        int totalHeight = cardHeight + verticalPadding * 2;
+
+        // Return the final dimension, including space for the panel's border/insets.
+        return new Dimension(
+                totalWidth + insets.left + insets.right,
+                totalHeight + insets.top + insets.bottom
+        );
+    }
+
+    @Override
+    public Dimension minimumLayoutSize(Container parent) {
+        return preferredLayoutSize(parent);
     }
 
     @Override
@@ -55,18 +82,4 @@ public class CardsPanelLayout implements LayoutManager {
 
     @Override
     public void removeLayoutComponent(Component comp) {}
-
-    @Override
-    public Dimension preferredLayoutSize(Container parent) {
-//        int preferredWidth = (int) (parent.getPreferredSize().getWidth());
-//        int preferredHeight = preferredWidth / 2; // height of half the parent container (two panels)
-        return new Dimension(600,  200); // fixed size for preferred layout
-    }
-
-    @Override
-    public Dimension minimumLayoutSize(Container parent) {
-//        int minWidth = (int) (parent.getMinimumSize().getWidth());
-//        int minHeight = (int) (parent.getMinimumSize().getHeight()/ 2); // height of half the parent container (two panels)
-        return new Dimension(300,  100);
-    }
 }

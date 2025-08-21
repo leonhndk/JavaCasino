@@ -11,12 +11,12 @@ public class MainFrame extends JFrame implements GUI_View {
     private final Color CASINO_GREEN = new Color(0x2d543d);
     private final Color CASINO_RED = new Color(0x952d28);
     private final Color CASINO_GOLD = new Color(0xD4AF37);
+    private final Font CASINO_FONT = new Font("Serif", Font.BOLD, 18);
     private final JLabel playerBalanceLabel;
     private final JLabel playerHandValueLabel;
     private final JLabel dealerHandValueLabel;
     private final JPanel playerCardsPanel;
     private final JPanel dealerCardsPanel;
-    private CardRenderer cardRenderer;
 
 
     public MainFrame () {
@@ -42,19 +42,15 @@ public class MainFrame extends JFrame implements GUI_View {
     public void initializeGUI() {
         setTitle("Blackjack Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        setResizable(false);
         Container contentPane = getContentPane();
-        //((JPanel) contentPane).setBorder(new EmptyBorder(5, 5, 5, 5));
         JPanel topPanel = createTopPanel();
         JPanel mainPanel = createMainPanel();
         JPanel logPanel = createLogPanel();
         contentPane.add(topPanel, BorderLayout.NORTH);
         contentPane.add(mainPanel, BorderLayout.CENTER);
         contentPane.add(logPanel, BorderLayout.SOUTH);
-       // contentPane.setBackground(POKER_GREEN);
         pack();
-        setMinimumSize(getPreferredSize()); // prevent resizing below preferred size to prevent cut off components
-        System.out.println("Calculated Minimum Size: " + getPreferredSize());
         setLocationRelativeTo(null);
     }
     private JPanel createLogPanel() {
@@ -62,19 +58,22 @@ public class MainFrame extends JFrame implements GUI_View {
         //logPanel.setBorder(BorderFactory.createTitledBorder("Game Log"));
         logTable.setEnabled(false);
         JScrollPane scrollPane = new JScrollPane(logTable);
-        scrollPane.setPreferredSize(new Dimension(50, 200));
+        //scrollPane.setPreferredSize(new Dimension(50, 200));
         logPanel.add(scrollPane, BorderLayout.CENTER);
         return logPanel;
     }
 
     private JPanel createMainPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBorder(BorderFactory.createTitledBorder("Game Table"));
         JLabel playerHandLabel = new JLabel("Player's Hand");
+        playerHandLabel.setFont(CASINO_FONT);
         playerHandLabel.setForeground(CASINO_GOLD);
         JLabel dealerHandLabel = new JLabel("Dealer's Hand");
+        dealerHandLabel.setFont(CASINO_FONT);
         dealerHandLabel.setForeground(CASINO_GOLD);
         mainPanel.setBackground(CASINO_RED);
+        playerHandValueLabel.setFont(CASINO_FONT);
+        dealerHandValueLabel.setFont(CASINO_FONT);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(0, 10, 0, 10);
 
@@ -120,7 +119,7 @@ public class MainFrame extends JFrame implements GUI_View {
         return mainPanel;
     }
     private JPanel createCardsPanel() {
-        CardsPanelLayout cardsPanelLayout = new CardsPanelLayout(8); // use custom layout to show hands
+        CardsPanelLayout cardsPanelLayout = new CardsPanelLayout(); // use custom layout to show hands
         JPanel cardsPanel = new JPanel(cardsPanelLayout);
         cardsPanel.setBackground(CASINO_GREEN);
         cardsPanel.setBorder(BorderFactory.createLineBorder(CASINO_GOLD, 2));
@@ -128,7 +127,7 @@ public class MainFrame extends JFrame implements GUI_View {
     }
 
     private JPanel createTopPanel() {
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton startButton = new JButton("Start Game");
         JButton saveButton = new JButton("Save Game");
         JButton loadButton = new JButton("Load Game");
@@ -137,6 +136,7 @@ public class MainFrame extends JFrame implements GUI_View {
         topPanel.add(saveButton);
         topPanel.add(loadButton);
         topPanel.add(new JSeparator(SwingConstants.VERTICAL));
+        playerBalanceLabel.setFont(CASINO_FONT);
         topPanel.add(playerBalanceLabel);
         return topPanel;
     }
