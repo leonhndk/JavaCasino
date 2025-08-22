@@ -1,17 +1,29 @@
 package de.esg.java.ausbildung.honl.game;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 
-public class MainFrame extends JFrame implements GUI_View {
+public class MainFrame extends JFrame implements ActionListener, GUI_View {
     private final JTable logTable;
+    private JButton startButton;
+    private JButton saveButton;
+    private JButton loadButton;
+    private JOptionPane optionPane;
+    private final JFileChooser fileChooser;
     private final Color CASINO_GREEN = new Color(0x2d543d);
     private final Color CASINO_RED = new Color(0x952d28);
     private final Color CASINO_GOLD = new Color(0xD4AF37);
     private final Font CASINO_FONT = new Font("Serif", Font.BOLD, 18);
+    private final Font LOG_FONT = new Font("Serif", Font.PLAIN, 14);
     private final JLabel playerBalanceLabel;
     private final JLabel playerHandValueLabel;
     private final JLabel dealerHandValueLabel;
@@ -35,11 +47,17 @@ public class MainFrame extends JFrame implements GUI_View {
         this.dealerHandValueLabel.setForeground(CASINO_GOLD);
         this.playerBalanceLabel = new JLabel("Player Balance: 0.00 €");
         this.playerBalanceLabel.setForeground(CASINO_GOLD);
+        fileChooser = new JFileChooser();
+        optionPane = new JOptionPane();
         initializeGUI();
-
     }
 
     public void initializeGUI() {
+//        UIManager.put("OptionPane.background", CASINO_RED);
+//        UIManager.put("OptionPane.messageForeground", CASINO_GOLD);
+//        UIManager.put("Button.background", CASINO_GREEN);
+//        UIManager.put("Button.foreground", CASINO_GOLD);
+        UIManager.put("Button.focusPainted", false);
         setTitle("Blackjack Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -55,16 +73,27 @@ public class MainFrame extends JFrame implements GUI_View {
     }
     private JPanel createLogPanel() {
         JPanel logPanel = new JPanel(new BorderLayout());
-        //logPanel.setBorder(BorderFactory.createTitledBorder("Game Log"));
         logTable.setEnabled(false);
-        JScrollPane scrollPane = new JScrollPane(logTable);
-        //scrollPane.setPreferredSize(new Dimension(50, 200));
-        logPanel.add(scrollPane, BorderLayout.CENTER);
+        logTable.setBackground(CASINO_RED);
+        logTable.setGridColor(CASINO_GOLD);
+        UIManager.put("TableHeader.cellBorder", BorderFactory.createLineBorder(CASINO_GOLD, 1));
+        JTableHeader tableHeader = logTable.getTableHeader();
+        tableHeader.setBackground(CASINO_GREEN);
+        tableHeader.setForeground(CASINO_GOLD);
+        tableHeader.setFont(CASINO_FONT);
+        int headerHeight = tableHeader.getPreferredSize().height;
+        int tableContentHeight = logTable.getRowHeight() * logTable.getRowCount();
+        int preferredHeight = headerHeight + tableContentHeight;
+        int preferredWidth = logTable.getPreferredSize().width;
+        logPanel.add(tableHeader, BorderLayout.NORTH);
+        logPanel.add(logTable, BorderLayout.CENTER);
+        logPanel.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
         return logPanel;
     }
 
     private JPanel createMainPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 20, 10));
         JLabel playerHandLabel = new JLabel("Player's Hand");
         playerHandLabel.setFont(CASINO_FONT);
         playerHandLabel.setForeground(CASINO_GOLD);
@@ -126,11 +155,23 @@ public class MainFrame extends JFrame implements GUI_View {
         return cardsPanel;
     }
 
+    private JButton createTopButtons(String caption) {
+        JButton button = new JButton(caption);
+        button.setFont(CASINO_FONT);
+        button.setBackground(CASINO_GREEN);
+        button.setForeground(CASINO_GOLD);
+        button.setFocusable(false);
+        button.setBorder(new CompoundBorder(BorderFactory.createLineBorder(CASINO_GOLD, 2),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
+        button.addActionListener(this);
+        return button;
+    }
+
     private JPanel createTopPanel() {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton startButton = new JButton("Start Game");
-        JButton saveButton = new JButton("Save Game");
-        JButton loadButton = new JButton("Load Game");
+        startButton = createTopButtons("Start Game");
+        saveButton = createTopButtons("Save Game");
+        loadButton = createTopButtons("Load Game");
         topPanel.setBackground(CASINO_RED);
         topPanel.add(startButton);
         topPanel.add(saveButton);
@@ -139,6 +180,43 @@ public class MainFrame extends JFrame implements GUI_View {
         playerBalanceLabel.setFont(CASINO_FONT);
         topPanel.add(playerBalanceLabel);
         return topPanel;
+    }
+
+//    private void dialogMessage(String message) {
+//        JLabel msgLabel = new JLabel(message);
+//        msgLabel.setFont(CASINO_FONT);
+//        msgLabel.setForeground(CASINO_GOLD);
+//        msgLabel.setBackground(CASINO_GREEN);
+//        JPanel msgPanel = new JPanel();
+//        msgPanel.setBackground(CASINO_RED);
+//        msgPanel.add(msgLabel);
+//        Object [] options = {"OK"};
+//        JOptionPane.showOptionDialog(this, msgPanel, null, JOptionPane.DEFAULT_OPTION,
+//                JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+//    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Handle button actions here
+        if (e.getSource() == startButton) {
+            System.out.println("Start Game button clicked");
+            JOptionPane.showOptionDialog(this, "OK", null, JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE, null, new Object[]{"OK"}, "OK");
+        } else if (e.getSource() == saveButton) {
+            // Save game logic
+            System.out.println("Save Game button clicked");
+        } else if (e.getSource() == loadButton) {
+            // Load game logic
+            int returnValue = fileChooser.showOpenDialog(this);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                // Handle file selection
+                String selectedFile = fileChooser.getSelectedFile().getAbsolutePath();
+                Path filePath = Paths.get(selectedFile);
+                SaveUtils.loadSavedGame(filePath);
+            } else {
+                System.out.println("File selection cancelled.");
+            }
+        }
     }
 
     @Override
@@ -158,6 +236,7 @@ public class MainFrame extends JFrame implements GUI_View {
 
     @Override
     public BigDecimal promptPlayerBet(BigDecimal maxBet) {
+        JOptionPane.show
         return null;
     }
 

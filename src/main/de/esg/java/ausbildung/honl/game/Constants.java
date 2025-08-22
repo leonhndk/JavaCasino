@@ -1,5 +1,6 @@
 package de.esg.java.ausbildung.honl.game;
 
+import java.awt.*;
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.file.Path;
@@ -28,4 +29,5 @@ public class Constants {
 	static final String INITIAL_DEAL_MSG = "Dealing initial cards...";
 	static final BigDecimal STARTING_BALANCE = new BigDecimal("10.00");
 	static final String BUY_IN_MSG = "Buy in of " + BUY_IN + " € will be charged to your balance.";
+	static final Color CASINO_GREEN = new Color(0, 128, 0);
 }
