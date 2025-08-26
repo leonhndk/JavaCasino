@@ -1,5 +1,7 @@
 package de.esg.java.ausbildung.honl.game;
 
+import de.esg.java.ausbildung.honl.game.gui.MainFrame;
+
 import javax.swing.SwingUtilities;
 
 public class Main {
@@ -11,6 +13,7 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             MainFrame view = new MainFrame();
             GameEngine gameEngine = new GameEngine(view);
+            view.setGameEngine(gameEngine);
 
             // Now that the view is created, make it visible
             view.setVisible(true);

@@ -1,29 +1,35 @@
-package de.esg.java.ausbildung.honl.game;
+package de.esg.java.ausbildung.honl.game.gui;
+
+import de.esg.java.ausbildung.honl.game.*;
+import de.esg.java.ausbildung.honl.game.gui.dialogs.BetInputDialog;
+import de.esg.java.ausbildung.honl.game.gui.dialogs.ConfirmDialog;
+import de.esg.java.ausbildung.honl.game.gui.dialogs.NameInputDialog;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 
-public class MainFrame extends JFrame implements ActionListener, GUI_View {
+public class MainFrame extends JFrame implements ActionListener, GameView {
+
+    private GameEngine gameEngine;
     private final JTable logTable;
     private JButton startButton;
     private JButton saveButton;
     private JButton loadButton;
-    private JOptionPane optionPane;
-    private final JFileChooser fileChooser;
-    private final Color CASINO_GREEN = new Color(0x2d543d);
-    private final Color CASINO_RED = new Color(0x952d28);
-    private final Color CASINO_GOLD = new Color(0xD4AF37);
+//    private JOptionPane optionPane;
+//    private final JFileChooser fileChooser;
+    private final Color CASINO_GREEN = Constants.CASINO_GREEN;
+    private final Color CASINO_RED = Constants.CASINO_RED;
+    private final Color CASINO_GOLD = Constants.CASINO_GOLD;
     private final Font CASINO_FONT = new Font("Serif", Font.BOLD, 18);
     private final Font LOG_FONT = new Font("Serif", Font.PLAIN, 14);
+    private final JLabel playerHandLabel;
     private final JLabel playerBalanceLabel;
     private final JLabel playerHandValueLabel;
     private final JLabel dealerHandValueLabel;
@@ -38,17 +44,18 @@ public class MainFrame extends JFrame implements ActionListener, GUI_View {
         this.logTable = new JTable(logTableModel);
         this.playerCardsPanel = createCardsPanel();
         this.dealerCardsPanel = createCardsPanel();
-        playerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.KING, Suit.HEARTS))); // temporary cards for testing
-        dealerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.FIVE, Suit.SPADES)));
-        dealerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.NINE, Suit.CLUBS)));
+//        playerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.KING, Suit.HEARTS))); // temporary cards for testing
+//        dealerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.FIVE, Suit.SPADES)));
+//        dealerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.NINE, Suit.CLUBS)));
+        this.playerHandLabel = new JLabel("Player's Hand");
         this.playerHandValueLabel = new JLabel("Player Hand Value: 0");
         this.playerHandValueLabel.setForeground(CASINO_GOLD);
         this.dealerHandValueLabel = new JLabel("Dealer Hand Value: 0");
         this.dealerHandValueLabel.setForeground(CASINO_GOLD);
         this.playerBalanceLabel = new JLabel("Player Balance: 0.00 €");
         this.playerBalanceLabel.setForeground(CASINO_GOLD);
-        fileChooser = new JFileChooser();
-        optionPane = new JOptionPane();
+//        fileChooser = new JFileChooser();
+//        optionPane = new JOptionPane();
         initializeGUI();
     }
 
@@ -94,7 +101,6 @@ public class MainFrame extends JFrame implements ActionListener, GUI_View {
     private JPanel createMainPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 20, 10));
-        JLabel playerHandLabel = new JLabel("Player's Hand");
         playerHandLabel.setFont(CASINO_FONT);
         playerHandLabel.setForeground(CASINO_GOLD);
         JLabel dealerHandLabel = new JLabel("Dealer's Hand");
@@ -182,40 +188,31 @@ public class MainFrame extends JFrame implements ActionListener, GUI_View {
         return topPanel;
     }
 
-//    private void dialogMessage(String message) {
-//        JLabel msgLabel = new JLabel(message);
-//        msgLabel.setFont(CASINO_FONT);
-//        msgLabel.setForeground(CASINO_GOLD);
-//        msgLabel.setBackground(CASINO_GREEN);
-//        JPanel msgPanel = new JPanel();
-//        msgPanel.setBackground(CASINO_RED);
-//        msgPanel.add(msgLabel);
-//        Object [] options = {"OK"};
-//        JOptionPane.showOptionDialog(this, msgPanel, null, JOptionPane.DEFAULT_OPTION,
-//                JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-//    }
+    public void setGameEngine(GameEngine gameEngine) {
+        this.gameEngine = gameEngine;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         // Handle button actions here
         if (e.getSource() == startButton) {
-            System.out.println("Start Game button clicked");
-            JOptionPane.showOptionDialog(this, "OK", null, JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.PLAIN_MESSAGE, null, new Object[]{"OK"}, "OK");
+            ConfirmDialog.showConfirm(this, "youre bust!");
         } else if (e.getSource() == saveButton) {
             // Save game logic
+//            NameInputDialog.nameInput(this);
             System.out.println("Save Game button clicked");
         } else if (e.getSource() == loadButton) {
+            BetInputDialog.promptCurrencyInput(this);
             // Load game logic
-            int returnValue = fileChooser.showOpenDialog(this);
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                // Handle file selection
-                String selectedFile = fileChooser.getSelectedFile().getAbsolutePath();
-                Path filePath = Paths.get(selectedFile);
-                SaveUtils.loadSavedGame(filePath);
-            } else {
-                System.out.println("File selection cancelled.");
-            }
+//            int returnValue = fileChooser.showOpenDialog(this);
+//            if (returnValue == JFileChooser.APPROVE_OPTION) {
+//                // Handle file selection
+//                String selectedFile = fileChooser.getSelectedFile().getAbsolutePath();
+//                Path filePath = Paths.get(selectedFile);
+//                SaveUtils.loadSavedGame(filePath);
+//            } else {
+//                System.out.println("File selection cancelled.");
+//            }
         }
     }
 
@@ -226,7 +223,8 @@ public class MainFrame extends JFrame implements ActionListener, GUI_View {
 
     @Override
     public String promptPlayerName() {
-        return "";
+        playerHandLabel.setText(NameInputDialog.nameInput(this) + "'s Hand");
+        return null;
     }
 
     @Override
@@ -236,7 +234,7 @@ public class MainFrame extends JFrame implements ActionListener, GUI_View {
 
     @Override
     public BigDecimal promptPlayerBet(BigDecimal maxBet) {
-        JOptionPane.show
+
         return null;
     }
 
@@ -247,7 +245,11 @@ public class MainFrame extends JFrame implements ActionListener, GUI_View {
 
     @Override
     public void showDealerHand(Dealer dealer, boolean hideFirstCard) {
-
+        Hand hand = dealer.getHand();
+        for (Card card: hand.getCards()) {
+            dealerCardsPanel.add(CardRenderer.createCardView(card, hideFirstCard));
+            hideFirstCard = false;
+        }
     }
 
     @Override
@@ -263,5 +265,10 @@ public class MainFrame extends JFrame implements ActionListener, GUI_View {
     @Override
     public void showCardDrawn(AbstractPlayer abstractPlayer) {
 
+    }
+
+    @Override
+    public void displayBuyInMsg() {
+        ConfirmDialog.showConfirm(this, Constants.BUY_IN_MSG);
     }
 }

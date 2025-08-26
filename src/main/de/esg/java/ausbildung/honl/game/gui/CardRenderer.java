@@ -1,8 +1,12 @@
-package de.esg.java.ausbildung.honl.game;
+package de.esg.java.ausbildung.honl.game.gui;
 
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
+import de.esg.java.ausbildung.honl.game.Card;
+import de.esg.java.ausbildung.honl.game.Constants;
+import de.esg.java.ausbildung.honl.game.Rank;
+import de.esg.java.ausbildung.honl.game.Suit;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -35,15 +39,24 @@ public final class CardRenderer {
      * Creates and returns a JPanel that visually represents a playing card.
      * This is the primary method to be used from outside this class.
      *
-     * @param card The Card object to render. If null, it will render a face-down card.
+     * @param card     The Card object to render. If null, it will render a face-down card.
+     * @param faceDown
      * @return A configured JPanel representing the card.
      */
-    public static JPanel createCardView(Card card) {
+    public static JPanel createCardView(Card card, boolean faceDown) {
         JPanel cardView = new JPanel(new BorderLayout(5, 5));
         String rankLabel = card.getRank().getLabel();
         cardView.setPreferredSize(CARD_SIZE);
         cardView.setBackground(CARD_BACKGROUND);
         cardView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        if (faceDown) {
+            // Render face-down card
+            cardView.setBackground(Constants.CASINO_GOLD);
+//            JLabel backLabel = new JLabel("🂠", SwingConstants.CENTER);
+//            backLabel.setFont(new Font("Serif", Font.PLAIN, 72));
+//            cardView.add(backLabel, BorderLayout.CENTER);
+            return cardView;
+        }
         // Top panel with rank label
         JLabel rankLabelTop = new JLabel(rankLabel);
         rankLabelTop.setFont(CARD_FONT);

@@ -20,6 +20,9 @@ private final Scanner scanner;
         System.out.println(Constants.WELCOME_MSG);
     }
 
+    public void displayBuyInMsg() {
+        System.out.println(Constants.BUY_IN_MSG);
+    }
     /**
      * @return String playerName
      */

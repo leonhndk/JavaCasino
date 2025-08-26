@@ -1,4 +1,4 @@
-package de.esg.java.ausbildung.honl.game;
+package de.esg.java.ausbildung.honl.game.gui;
 
 import java.awt.*;
 

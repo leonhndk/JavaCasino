@@ -29,7 +29,7 @@ public class GameEngine {
             if (checkReshuffle()) {
                 gameView.displayMessage(Constants.RESHUFFLE_MSG);
             }
-            gameView.displayMessage(Constants.BUY_IN_MSG);
+            gameView.displayBuyInMsg();
             if (player.placeBet(Constants.BUY_IN) == null) {
                 gameView.displayMessage(Constants.INSUFFICIENT_FUNDS_MSG);
                 break;
