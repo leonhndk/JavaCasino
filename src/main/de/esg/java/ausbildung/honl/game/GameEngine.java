@@ -44,7 +44,7 @@ public class GameEngine {
             // show player hand
             gameView.showPlayerHand(player);
             // show dealer hand
-            gameView.showDealerHand(dealer, false);
+            gameView.showDealerHand(dealer, true);
             // check for blackjack
             if (checkBlackjack(player) || checkBlackjack(dealer)) {
                 playAgain = gameView.promptYesNo(Constants.PLAY_AGAIN_MSG);
@@ -61,10 +61,13 @@ public class GameEngine {
         // game is over
         gameView.displayMessage("Game finished, thank you for playing!");
         gameView.showPlayerBalance(player.getBalance());
-        if (SaveUtils.saveGame(deck, player.getPlayerName(), player.getBalance())){
-            gameView.displayMessage("Game saved successfully.");
-        } else {
-            gameView.displayMessage("Game save failed.");
+
+        if (gameView.promptSaveGame()) {
+            if (SaveUtils.saveGame(deck, player.getPlayerName(), player.getBalance())){
+                gameView.displayMessage("Game saved successfully.");
+            } else {
+                gameView.displayMessage("Game save failed.");
+            }
         }
         if (gameView instanceof ConsoleView) {
             ((ConsoleView) gameView).closeScanner();
@@ -72,7 +75,6 @@ public class GameEngine {
     }
 
     private void determineWinner() {
-        // use list of players when implementing multiplayer
         int playerHandValue = player.getHand().getHandValue();
         int dealerHandValue = dealer.getHand().getHandValue();
         if (player.isBust()) {
@@ -115,20 +117,20 @@ public class GameEngine {
 
     private void gameInit() {
         gameView.displayWelcomeMsg();
-        if (SaveUtils.gameSaveExists()) {
-            if (gameView.promptYesNo(Constants.LOAD_GAME_MSG)) {
-                SaveData saveData = SaveUtils.loadSavedGame(Constants.filePath);
-                if (saveData != null) {
-                    player.setBalance(saveData.balance());
-                    deck.addCards(saveData.cardStack(), true);
-                    gameView.displayMessage("Game loaded successfully.");
-                }
-                else {
-                    gameView.displayMessage("Failed to load game! Continuing with new game...");
-                }
-            }
-
-        }
+//        if (SaveUtils.gameSaveExists()) {
+//            if (gameView.promptYesNo(Constants.LOAD_GAME_MSG)) {
+//                SaveData saveData = SaveUtils.loadSavedGame(Constants.filePath);
+//                if (saveData != null) {
+//                    player.setBalance(saveData.balance());
+//                    deck.addCards(saveData.cardStack(), true);
+//                    gameView.displayMessage("Game loaded successfully.");
+//                }
+//                else {
+//                    gameView.displayMessage("Failed to load game! Continuing with new game...");
+//                }
+//            }
+//
+//        }
         player.setPlayerName(gameView.promptPlayerName());
         gameView.showPlayerBalance(player.getBalance());
     }
@@ -136,12 +138,13 @@ public class GameEngine {
     // abstraction unnecessary?
     private boolean checkBlackjack (AbstractPlayer abstractPlayer) {
         if (abstractPlayer.getHand().isBlackjack()) {
-            gameView.displayMessage(Constants.BLACKJACK_MSG);
             if (abstractPlayer instanceof Player) {
+                gameView.displayMessage(Constants.BLACKJACK_MSG);
                 ((Player) abstractPlayer).winBet(totalBets);
                 gameView.showPlayerBalance(((Player) abstractPlayer).getBalance());
             }
             else {
+                gameView.displayMessage(Constants.BLACKJACK_MSG);
                 gameView.displayMessage("Dealer wins!");
             }
             return true;
@@ -176,9 +179,10 @@ public class GameEngine {
 
             // Force hit for hands < 17
             if (player.getHandValue() < 17) {
-                gameView.displayMessage(player.getPlayerName() + " forced to hit!");
+                gameView.displayForcedHit(player);
                 player.drawCard(deck);
-                gameView.showCardDrawn(player);
+                gameView.showPlayerHand(player); // Update the hand display
+                try { Thread.sleep(2000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
                 continue;
             }
 
@@ -186,7 +190,9 @@ public class GameEngine {
             boolean wantsToHit = gameView.promptYesNo("Do you wish to draw another card?");
             if (wantsToHit) {
                 player.drawCard(deck);
-                gameView.showCardDrawn(player);
+                gameView.showPlayerHand(player); // Update the hand display
+                // Pause so the user can see the card before the next prompt or bust message
+                try { Thread.sleep(2000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
             } else {
                 break;
             }
@@ -197,9 +203,9 @@ public class GameEngine {
     private void dealerTurn() {
         gameView.showDealerHand(dealer, false);
         while (dealer.getHand().getHandValue() < 17) {
+            try { Thread.sleep(800); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
             dealer.drawCard(deck);
-            gameView.displayMessage("Dealer draws a card...");
-            gameView.showCardDrawn(dealer);
+            gameView.showDealerHand(dealer, false); // Update the hand display
         }
     }
 

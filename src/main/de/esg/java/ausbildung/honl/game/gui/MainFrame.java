@@ -4,6 +4,7 @@ import de.esg.java.ausbildung.honl.game.*;
 import de.esg.java.ausbildung.honl.game.gui.dialogs.BetInputDialog;
 import de.esg.java.ausbildung.honl.game.gui.dialogs.ConfirmDialog;
 import de.esg.java.ausbildung.honl.game.gui.dialogs.NameInputDialog;
+import de.esg.java.ausbildung.honl.game.gui.dialogs.YesNoDialog;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,11 +23,6 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
     private JButton startButton;
     private JButton saveButton;
     private JButton loadButton;
-//    private JOptionPane optionPane;
-//    private final JFileChooser fileChooser;
-    private final Color CASINO_GREEN = Constants.CASINO_GREEN;
-    private final Color CASINO_RED = Constants.CASINO_RED;
-    private final Color CASINO_GOLD = Constants.CASINO_GOLD;
     private final Font CASINO_FONT = new Font("Serif", Font.BOLD, 18);
     private final Font LOG_FONT = new Font("Serif", Font.PLAIN, 14);
     private final JLabel playerHandLabel;
@@ -44,26 +40,17 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
         this.logTable = new JTable(logTableModel);
         this.playerCardsPanel = createCardsPanel();
         this.dealerCardsPanel = createCardsPanel();
-//        playerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.KING, Suit.HEARTS))); // temporary cards for testing
-//        dealerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.FIVE, Suit.SPADES)));
-//        dealerCardsPanel.add(CardRenderer.createCardView(new Card(Rank.NINE, Suit.CLUBS)));
         this.playerHandLabel = new JLabel("Player's Hand");
-        this.playerHandValueLabel = new JLabel("Player Hand Value: 0");
-        this.playerHandValueLabel.setForeground(CASINO_GOLD);
-        this.dealerHandValueLabel = new JLabel("Dealer Hand Value: 0");
-        this.dealerHandValueLabel.setForeground(CASINO_GOLD);
+        this.playerHandValueLabel = new JLabel("Hand Value: 0");
+        this.playerHandValueLabel.setForeground(Constants.CASINO_GOLD);
+        this.dealerHandValueLabel = new JLabel("Hand Value: 0");
+        this.dealerHandValueLabel.setForeground(Constants.CASINO_GOLD);
         this.playerBalanceLabel = new JLabel("Player Balance: 0.00 €");
-        this.playerBalanceLabel.setForeground(CASINO_GOLD);
-//        fileChooser = new JFileChooser();
-//        optionPane = new JOptionPane();
+        this.playerBalanceLabel.setForeground(Constants.CASINO_GOLD);
         initializeGUI();
     }
 
     public void initializeGUI() {
-//        UIManager.put("OptionPane.background", CASINO_RED);
-//        UIManager.put("OptionPane.messageForeground", CASINO_GOLD);
-//        UIManager.put("Button.background", CASINO_GREEN);
-//        UIManager.put("Button.foreground", CASINO_GOLD);
         UIManager.put("Button.focusPainted", false);
         setTitle("Blackjack Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,12 +68,12 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
     private JPanel createLogPanel() {
         JPanel logPanel = new JPanel(new BorderLayout());
         logTable.setEnabled(false);
-        logTable.setBackground(CASINO_RED);
-        logTable.setGridColor(CASINO_GOLD);
-        UIManager.put("TableHeader.cellBorder", BorderFactory.createLineBorder(CASINO_GOLD, 1));
+        logTable.setBackground(Constants.CASINO_RED);
+        logTable.setGridColor(Constants.CASINO_GOLD);
+        UIManager.put("TableHeader.cellBorder", BorderFactory.createLineBorder(Constants.CASINO_GOLD, 1));
         JTableHeader tableHeader = logTable.getTableHeader();
-        tableHeader.setBackground(CASINO_GREEN);
-        tableHeader.setForeground(CASINO_GOLD);
+        tableHeader.setBackground(Constants.CASINO_GREEN);
+        tableHeader.setForeground(Constants.CASINO_GOLD);
         tableHeader.setFont(CASINO_FONT);
         int headerHeight = tableHeader.getPreferredSize().height;
         int tableContentHeight = logTable.getRowHeight() * logTable.getRowCount();
@@ -102,11 +89,11 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 20, 10));
         playerHandLabel.setFont(CASINO_FONT);
-        playerHandLabel.setForeground(CASINO_GOLD);
+        playerHandLabel.setForeground(Constants.CASINO_GOLD);
         JLabel dealerHandLabel = new JLabel("Dealer's Hand");
         dealerHandLabel.setFont(CASINO_FONT);
-        dealerHandLabel.setForeground(CASINO_GOLD);
-        mainPanel.setBackground(CASINO_RED);
+        dealerHandLabel.setForeground(Constants.CASINO_GOLD);
+        mainPanel.setBackground(Constants.CASINO_RED);
         playerHandValueLabel.setFont(CASINO_FONT);
         dealerHandValueLabel.setFont(CASINO_FONT);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -156,18 +143,18 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
     private JPanel createCardsPanel() {
         CardsPanelLayout cardsPanelLayout = new CardsPanelLayout(); // use custom layout to show hands
         JPanel cardsPanel = new JPanel(cardsPanelLayout);
-        cardsPanel.setBackground(CASINO_GREEN);
-        cardsPanel.setBorder(BorderFactory.createLineBorder(CASINO_GOLD, 2));
+        cardsPanel.setBackground(Constants.CASINO_GREEN);
+        cardsPanel.setBorder(BorderFactory.createLineBorder(Constants.CASINO_GOLD, 2));
         return cardsPanel;
     }
 
     private JButton createTopButtons(String caption) {
         JButton button = new JButton(caption);
         button.setFont(CASINO_FONT);
-        button.setBackground(CASINO_GREEN);
-        button.setForeground(CASINO_GOLD);
+        button.setBackground(Constants.CASINO_GREEN);
+        button.setForeground(Constants.CASINO_GOLD);
         button.setFocusable(false);
-        button.setBorder(new CompoundBorder(BorderFactory.createLineBorder(CASINO_GOLD, 2),
+        button.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Constants.CASINO_GOLD, 2),
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         button.addActionListener(this);
         return button;
@@ -178,7 +165,7 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
         startButton = createTopButtons("Start Game");
         saveButton = createTopButtons("Save Game");
         loadButton = createTopButtons("Load Game");
-        topPanel.setBackground(CASINO_RED);
+        topPanel.setBackground(Constants.CASINO_RED);
         topPanel.add(startButton);
         topPanel.add(saveButton);
         topPanel.add(loadButton);
@@ -196,13 +183,26 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
     public void actionPerformed(ActionEvent e) {
         // Handle button actions here
         if (e.getSource() == startButton) {
-            ConfirmDialog.showConfirm(this, "youre bust!");
+            startButton.setEnabled(false);
+            loadButton.setEnabled(false);
+            new Thread(() -> {
+                try {
+                    gameEngine.playGame();
+                } finally {
+                    SwingUtilities.invokeLater(() -> {
+                        playerCardsPanel.removeAll();
+                        dealerCardsPanel.removeAll();
+                        startButton.setEnabled(true);
+                        loadButton.setEnabled(true);
+                    });
+                }
+                }) .start();
         } else if (e.getSource() == saveButton) {
             // Save game logic
 //            NameInputDialog.nameInput(this);
             System.out.println("Save Game button clicked");
         } else if (e.getSource() == loadButton) {
-            BetInputDialog.promptCurrencyInput(this);
+//            BetInputDialog.promptCurrencyInput(this);
             // Load game logic
 //            int returnValue = fileChooser.showOpenDialog(this);
 //            if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -218,48 +218,75 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
 
     @Override
     public void displayWelcomeMsg() {
-
+        ConfirmDialog.showConfirm(this, Constants.WELCOME_MSG);
     }
 
     @Override
     public String promptPlayerName() {
-        playerHandLabel.setText(NameInputDialog.nameInput(this) + "'s Hand");
-        return null;
+        final String name = NameInputDialog.nameInput(this);
+        SwingUtilities.invokeLater(() -> {
+            if (name != null && !name.isEmpty()) {
+                playerHandLabel.setText(name + "'s Hand");
+            } else {
+                playerHandLabel.setText("Player's Hand");
+            }
+        });
+        return name;
     }
 
     @Override
     public void showPlayerBalance(BigDecimal balance) {
-
+        SwingUtilities.invokeLater(() -> playerBalanceLabel.setText("Player Balance: " + balance + " €"));
     }
 
     @Override
     public BigDecimal promptPlayerBet(BigDecimal maxBet) {
 
-        return null;
+        return BetInputDialog.promptCurrencyInput(this, maxBet);
     }
 
     @Override
     public void showPlayerHand(Player player) {
-
+        SwingUtilities.invokeLater(() -> {
+            playerCardsPanel.removeAll();
+            Hand hand = player.getHand();
+            for (Card card : hand.getCards()) {
+                playerCardsPanel.add(CardRenderer.createCardView(card, false));
+            }
+            playerHandValueLabel.setText("Hand Value: " + hand.getHandValue());
+            playerCardsPanel.revalidate();
+            playerCardsPanel.repaint();
+        });
     }
 
     @Override
     public void showDealerHand(Dealer dealer, boolean hideFirstCard) {
-        Hand hand = dealer.getHand();
-        for (Card card: hand.getCards()) {
-            dealerCardsPanel.add(CardRenderer.createCardView(card, hideFirstCard));
-            hideFirstCard = false;
-        }
+        SwingUtilities.invokeLater(() -> {
+            dealerCardsPanel.removeAll();
+            Hand hand = dealer.getHand();
+            boolean hideCard = hideFirstCard;
+            for (Card card : hand.getCards()) {
+                dealerCardsPanel.add(CardRenderer.createCardView(card, hideCard));
+                hideCard = false;
+            }
+            if (hideFirstCard) {
+                dealerHandValueLabel.setText("Hand Value: ?");
+            } else {
+                dealerHandValueLabel.setText("Hand Value: " + dealer.getHand().getHandValue());
+            }
+            dealerCardsPanel.revalidate();
+            dealerCardsPanel.repaint();
+        });
     }
 
     @Override
     public void displayMessage(String message) {
-
+        ConfirmDialog.showConfirm(this, message);
     }
 
     @Override
     public boolean promptYesNo(String message) {
-        return false;
+        return YesNoDialog.promptYesNo(this, message) == JOptionPane.YES_OPTION;
     }
 
     @Override
@@ -268,7 +295,21 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
     }
 
     @Override
+    public void displayForcedHit(Player player) {
+        String name = "Player";
+        if (player.getPlayerName() != null && !player.getPlayerName().isEmpty()) {
+            name = player.getPlayerName();
+        }
+        ConfirmDialog.showConfirm(this,name + " forced to hit!");
+    }
+
+    @Override
     public void displayBuyInMsg() {
         ConfirmDialog.showConfirm(this, Constants.BUY_IN_MSG);
+    }
+
+    @Override
+    public boolean promptSaveGame() {
+        return YesNoDialog.promptYesNo(this, "Would you like to save this game state?") == JOptionPane.YES_OPTION;
     }
 }

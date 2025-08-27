@@ -21,7 +21,6 @@ public class Main {
             // Start the game
             // Note: Long-running tasks like playGame() can freeze the GUI.
             // You might later want to run the game loop in a separate thread.
-            gameEngine.playGame();
         });
     }
 }

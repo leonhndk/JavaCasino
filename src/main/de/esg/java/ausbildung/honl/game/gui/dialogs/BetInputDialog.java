@@ -10,13 +10,14 @@ import java.text.ParseException;
 
 public class BetInputDialog extends BaseDialog {
     private final BigDecimal minValue = BigDecimal.valueOf(0.00);
-    private final BigDecimal maxValue = BigDecimal.valueOf(2.00);
+    private final BigDecimal maxValue;
     private JFormattedTextField currencyField;
     private JLabel errorLabel;
     private BigDecimal inputValue;
 
-    public BetInputDialog(Frame parent) {
-        super(parent, "Please enter your bet (between €0,00 and €2,00):");
+    public BetInputDialog(Frame parent, BigDecimal maxValue) {
+        super(parent, String.format("Enter your bet (max %.2f €)", maxValue));
+        this.maxValue = maxValue;
     }
 
     @Override
@@ -92,6 +93,7 @@ public class BetInputDialog extends BaseDialog {
             // Corrected logic: check if value is LESS THAN min OR GREATER THAN max.
             if (value.compareTo(minValue) < 0 || value.compareTo(maxValue) > 0) {
                 errorLabel.setText("Value must be between 0,00 € and 2,00 €");
+                pack();
                 return;
             }
             // If we get here, the value is valid
@@ -104,11 +106,9 @@ public class BetInputDialog extends BaseDialog {
         }
     }
 
-    public static BigDecimal promptCurrencyInput(Frame parent) {
-        BetInputDialog dialog = new BetInputDialog(parent);
+    public static BigDecimal promptCurrencyInput(Frame parent, BigDecimal maxBet) {
+        BetInputDialog dialog = new BetInputDialog(parent, maxBet);
         dialog.setVisible(true);
-        return dialog.getResult() == JOptionPane.OK_OPTION ? dialog.getInputValue() : null;
+        return dialog.getResult() == JOptionPane.OK_OPTION ? dialog.getInputValue() : BigDecimal.ZERO;
     }
-
-
 }

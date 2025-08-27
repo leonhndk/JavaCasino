@@ -23,4 +23,8 @@ public interface GameView {
     void showCardDrawn(AbstractPlayer abstractPlayer);
 
     void displayBuyInMsg();
+
+    void displayForcedHit(Player player);
+
+    boolean promptSaveGame();
 }

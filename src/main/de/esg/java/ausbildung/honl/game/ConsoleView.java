@@ -23,6 +23,12 @@ private final Scanner scanner;
     public void displayBuyInMsg() {
         System.out.println(Constants.BUY_IN_MSG);
     }
+
+    @Override
+    public void displayForcedHit(Player player) {
+        System.out.println(player.getPlayerName() + " is forced to hit");
+    }
+
     /**
      * @return String playerName
      */
@@ -143,6 +149,11 @@ private final Scanner scanner;
             }
             return input.startsWith("Y");
         }
+    }
+
+    @Override
+    public boolean promptSaveGame() {
+        return promptYesNo("Would you like to save your game? ");
     }
 
     public void showCardDrawn (AbstractPlayer abstractPlayer) {

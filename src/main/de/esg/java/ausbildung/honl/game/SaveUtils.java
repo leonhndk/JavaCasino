@@ -18,7 +18,6 @@ public class SaveUtils {
 		ArrayList<String> savedGame = readSaveFile(filePath);
 		ArrayList<Card> cardStack;
 		// check file before trying to parse cards and balance, savedGame may be null
-
         if (savedGame == null || !validateSaveData(savedGame)) {
 			// handle logging here or in gameView instance?
 			return null;
