@@ -19,5 +19,9 @@ public enum Suit {
 	public String getIconColor() {
 		return iconColor;
 	}
+
+	public String getName() {
+		return this.name();
+	}
 	
 }

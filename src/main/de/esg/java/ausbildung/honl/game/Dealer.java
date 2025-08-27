@@ -1,15 +1,25 @@
 package de.esg.java.ausbildung.honl.game;
 
+import java.util.NoSuchElementException;
+
 public class Dealer extends AbstractPlayer {
+    private static final String DEALER_NAME = "Dealer";
 
     @Override
-    public void takeTurn(Deck deck, GameEngine gameEngine) {
-        if (hand.getHandValue() < 17) {
-            // Dealer must hit if hand value is less than 17
-            hand.addCard(deck.drawCard());
-        } else {
-            // Dealer stands if hand value is 17 or more
-            System.out.println("Dealer forced to stand with hand value: " + hand.getHandValue());
+    public Card drawCard(Deck deck) {
+        try {
+            Card card = deck.removeCard();
+            getHand().addCard(card);
+            return card;
         }
+        catch (NoSuchElementException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean isBust() {
+        return getHand().getHandValue() > 21;
     }
 }
