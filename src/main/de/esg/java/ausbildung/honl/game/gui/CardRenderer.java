@@ -29,8 +29,6 @@ public final class CardRenderer {
     private static final Map<Suit, ImageIcon> ICON_CACHE = new EnumMap<>(Suit.class);
     private static final int ICON_SIZE = 24;
 
-    private CardRenderer() {}
-
     public static Dimension getCardDimension() {
         return CARD_SIZE;
     }
@@ -50,11 +48,8 @@ public final class CardRenderer {
         cardView.setBackground(CARD_BACKGROUND);
         cardView.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         if (faceDown) {
-            // Render face-down card
+            // Render face-down card (empty panel with casino gold background)
             cardView.setBackground(Constants.CASINO_GOLD);
-//            JLabel backLabel = new JLabel("🂠", SwingConstants.CENTER);
-//            backLabel.setFont(new Font("Serif", Font.PLAIN, 72));
-//            cardView.add(backLabel, BorderLayout.CENTER);
             return cardView;
         }
         // Top panel with rank label

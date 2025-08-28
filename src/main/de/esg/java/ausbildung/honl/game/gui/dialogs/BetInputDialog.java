@@ -46,7 +46,7 @@ public class BetInputDialog extends BaseDialog {
         currencyField.setCaretColor(Color.WHITE);
         currencyField.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 2));
         // Panel to hold the currency field and a label
-        JPanel fieldPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        JPanel fieldPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         fieldPanel.setBackground(CASINO_GREEN);
 
         JLabel euroLabel = new JLabel("€");
@@ -86,12 +86,19 @@ public class BetInputDialog extends BaseDialog {
     }
 
     private void attemptSubmit() {
+        String input = currencyField.getText().trim();
+        if (input.isEmpty()) {
+            inputValue = BigDecimal.ZERO;
+            result = JOptionPane.OK_OPTION;
+            dispose();
+            return;
+        }
         try {
             currencyField.commitEdit();
             BigDecimal value = (BigDecimal) currencyField.getValue(); // Now guaranteed to be a BigDecimal
             // The formatter already checks this, but a manual check gives a better error message.
             // Corrected logic: check if value is LESS THAN min OR GREATER THAN max.
-            if (value.compareTo(minValue) < 0 || value.compareTo(maxValue) > 0) {
+            if (value.compareTo(minValue) < 0 || value.compareTo(maxValue) > 0 ) {
                 errorLabel.setText("Value must be between 0,00 € and 2,00 €");
                 pack();
                 return;
@@ -103,6 +110,7 @@ public class BetInputDialog extends BaseDialog {
         } catch (ParseException e) {
            errorLabel.setText("Invalid input!");
            pack();
+           currencyField.requestFocusInWindow();
         }
     }
 

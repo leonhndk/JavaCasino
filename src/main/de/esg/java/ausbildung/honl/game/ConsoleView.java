@@ -1,12 +1,15 @@
 package de.esg.java.ausbildung.honl.game;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleView implements GameView {
 
 private final Scanner scanner;
+
 
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
@@ -162,6 +165,24 @@ private final Scanner scanner;
         } else if (abstractPlayer instanceof Dealer) {
             System.out.printf("%s drew %s\n", "Dealer", abstractPlayer.getHand().getLastCard().toString());
         }
+    }
+
+    @Override
+    public void updatePlayerName(String name) {
+        System.out.println("Game loaded for player: " + name);
+    }
+
+    @Override
+    public void showTotalBets(BigDecimal totalBets) {
+
+    }
+
+    @Override
+    public void logEvent(String actor, String action) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        String timestamp = now.format(formatter);
+        System.err.println(timestamp + actor + action);
     }
 
     public void closeScanner() {

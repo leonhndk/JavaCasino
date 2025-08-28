@@ -10,8 +10,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SaveUtils {
+
+	public static Path getSavePath() {
+		return Paths.get(System.getProperty("user.home"), "JavaJack");
+	}
 	public static boolean gameSaveExists() {
-		return Files.exists(Constants.filePath);
+		return Files.exists(getSavePath());
 	}
 
 	public static SaveData loadSavedGame(Path filePath) {
@@ -22,13 +26,14 @@ public class SaveUtils {
 			// handle logging here or in gameView instance?
 			return null;
 		}
-		BigDecimal balance = readBalance(savedGame.get(0));
+		String playerName = savedGame.get(0);
+		BigDecimal balance = readBalance(savedGame.get(1));
 		cardStack = loadCardStack(savedGame);
 		if (balance == null || cardStack.isEmpty()) {
 			// handle logging here or in gameView instance?
 			return null;
 		}
-		return new SaveData(balance, cardStack);
+		return new SaveData(playerName, balance, cardStack);
 	}
 	
 	private static BigDecimal readBalance (String line) {
@@ -103,11 +108,11 @@ public class SaveUtils {
 		boolean balanceMatches = false;
 		boolean stackMatches = true;
 		// match pattern for saved balance
-		if (gameSave.get(0).matches(Constants.BALANCE_REGEX)) {
+		if (gameSave.get(1).matches(Constants.BALANCE_REGEX)) {
 			balanceMatches = true;
 		}
 		// match pattern for saved card stack
-		for (int i = 1; i < gameSave.size(); i++) {
+		for (int i = 2; i < gameSave.size(); i++) {
 			if (!gameSave.get(i).matches(Constants.CARD_REGEX)) {
 				// logging ?
 				stackMatches = false;
@@ -136,7 +141,8 @@ public class SaveUtils {
 	private static ArrayList<String> createSaveData (BigDecimal playerBalance, String playerName, Deck deck) {
 		ArrayList<String> gameSave = new ArrayList<>();
 		ArrayList<Card> cards = deck.getCards();
-		gameSave.add(0, playerName + "'s balance: " + playerBalance + " €");
+		gameSave.add(playerName);
+		gameSave.add("Balance: " + playerBalance + " €");
 		for (Card card : cards) {
 			gameSave.add(card.toString());
 		}
@@ -181,9 +187,9 @@ public class SaveUtils {
 	}
 
 	public static boolean saveGame(Deck deck, String playerName, BigDecimal balance) {
-		Path path = Paths.get(System.getProperty("user.home") + File.separator + "JavaJack");
+		Path savePath = getSavePath();
+		createDirectory(savePath.getParent());
 		ArrayList<String> saveData = createSaveData(balance, playerName, deck);
-		String filePath = createDirectory(path) + File.separator + Constants.FILE_NAME;
-		return writeSaveData(saveData, filePath);
+		return writeSaveData(saveData, savePath.toString());
 	}
 }

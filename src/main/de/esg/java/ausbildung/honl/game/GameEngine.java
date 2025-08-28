@@ -1,6 +1,7 @@
 package de.esg.java.ausbildung.honl.game;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 
 public class GameEngine {
 
@@ -18,8 +19,30 @@ public class GameEngine {
         this.totalBets = BigDecimal.ZERO;
     }
 
-    public void playGame() {
+    public void playNewGame() {
+        player.resetPlayer();
         gameInit();
+        runGameLoop();
+    }
+
+    public void loadAndPlay(Path filePath) {
+        SaveData saveData = SaveUtils.loadSavedGame(filePath);
+        if (saveData != null) {
+            player.setBalance(saveData.balance());
+            player.setPlayerName(saveData.playerName());
+            this.deck = new Deck(0, false); // Create empty deck
+            deck.addCards(saveData.cardStack(), true);
+            gameView.displayMessage("Game loaded successfully.");
+            gameView.logEvent("System", "Loaded game for player " + player.getPlayerName());
+            gameView.updatePlayerName(player.getPlayerName());
+            gameView.showPlayerBalance(player.getBalance());
+            runGameLoop();
+        } else {
+            gameView.displayMessage("Failed to load game!");
+            gameView.logEvent("System", "Failed to load game from " + filePath);
+        }
+    }
+    private void runGameLoop() {
         boolean playAgain = true;
         while (playAgain) {
             player.clearHand();
@@ -28,13 +51,14 @@ public class GameEngine {
             // check for depletion of card stack
             if (checkReshuffle()) {
                 gameView.displayMessage(Constants.RESHUFFLE_MSG);
+                gameView.logEvent("System", "Deck reshuffled");
             }
             gameView.displayBuyInMsg();
             if (player.placeBet(Constants.BUY_IN) == null) {
                 gameView.displayMessage(Constants.INSUFFICIENT_FUNDS_MSG);
                 break;
             }
-
+            gameView.logEvent(player.getPlayerName(), "Placed buy-in of " + Constants.BUY_IN + " €");
             totalBets = totalBets.add(Constants.BUY_IN);
 
             // show player balance
@@ -57,16 +81,18 @@ public class GameEngine {
             }
             determineWinner();
             playAgain = gameView.promptYesNo(Constants.PLAY_AGAIN_MSG);
-            }
+        }
         // game is over
         gameView.displayMessage("Game finished, thank you for playing!");
         gameView.showPlayerBalance(player.getBalance());
-
+        gameView.logEvent(player.getPlayerName(), "Game session ended ");
         if (gameView.promptSaveGame()) {
             if (SaveUtils.saveGame(deck, player.getPlayerName(), player.getBalance())){
                 gameView.displayMessage("Game saved successfully.");
+                gameView.logEvent("System", "Saved game for player " + player.getPlayerName());
             } else {
                 gameView.displayMessage("Game save failed.");
+                gameView.logEvent("System", "Failed to save game for player " + player.getPlayerName());
             }
         }
         if (gameView instanceof ConsoleView) {
@@ -79,18 +105,24 @@ public class GameEngine {
         int dealerHandValue = dealer.getHand().getHandValue();
         if (player.isBust()) {
             gameView.displayMessage("Player busts! Dealer wins.");
+            gameView.logEvent("Dealer", "Win round");
             player.loseBet();
         } else if (dealer.getHand().isBust()) {
             gameView.displayMessage("Dealer busts! Player wins!");
+            gameView.logEvent(player.getPlayerName(), "Win round");
             player.winBet(totalBets);
         } else if (playerHandValue > dealerHandValue) {
             gameView.displayMessage("Player wins!");
+            gameView.logEvent(player.getPlayerName(), "Win round");
             player.winBet(totalBets);
         } else if (playerHandValue < dealerHandValue) {
             gameView.displayMessage("Dealer wins!");
+            gameView.logEvent("Dealer", "Win round");
             player.loseBet();
         } else {
             gameView.displayMessage("It's a push (tie)!");
+            gameView.showDealerHand(dealer, false);
+            gameView.logEvent("System", "Round ended in push");
             player.pushBet();
         }
         gameView.showPlayerBalance(player.getBalance());
@@ -108,43 +140,37 @@ public class GameEngine {
 
     private void initialDeal() {
         gameView.displayMessage(Constants.INITIAL_DEAL_MSG);
+        gameView.logEvent("System", "Initial deal");
         // player draws card
         player.drawCard(deck);
         dealer.drawCard(deck);
         player.drawCard(deck);
         dealer.drawCard(deck);
     }
+    
+    private void loadGame () {
+        // load game logic
+    }
 
     private void gameInit() {
         gameView.displayWelcomeMsg();
-//        if (SaveUtils.gameSaveExists()) {
-//            if (gameView.promptYesNo(Constants.LOAD_GAME_MSG)) {
-//                SaveData saveData = SaveUtils.loadSavedGame(Constants.filePath);
-//                if (saveData != null) {
-//                    player.setBalance(saveData.balance());
-//                    deck.addCards(saveData.cardStack(), true);
-//                    gameView.displayMessage("Game loaded successfully.");
-//                }
-//                else {
-//                    gameView.displayMessage("Failed to load game! Continuing with new game...");
-//                }
-//            }
-//
-//        }
         player.setPlayerName(gameView.promptPlayerName());
         gameView.showPlayerBalance(player.getBalance());
     }
 
-    // abstraction unnecessary?
+
     private boolean checkBlackjack (AbstractPlayer abstractPlayer) {
         if (abstractPlayer.getHand().isBlackjack()) {
             if (abstractPlayer instanceof Player) {
                 gameView.displayMessage(Constants.BLACKJACK_MSG);
+                gameView.displayMessage( ((Player) abstractPlayer).getPlayerName() + " win round");
                 ((Player) abstractPlayer).winBet(totalBets);
                 gameView.showPlayerBalance(((Player) abstractPlayer).getBalance());
             }
             else {
+                gameView.showDealerHand((Dealer) abstractPlayer, false);
                 gameView.displayMessage(Constants.BLACKJACK_MSG);
+                gameView.logEvent("Dealer", "Win round");
                 gameView.displayMessage("Dealer wins!");
             }
             return true;
@@ -166,7 +192,7 @@ public class GameEngine {
             // Prompt for additional bet
             BigDecimal additionalBet = gameView.promptPlayerBet(
                     player.getBalance().min(Constants.MAX_BET));
-
+            gameView.logEvent(player.getPlayerName(), "Placed bet of " + additionalBet + " €");
             // Place additional bet
             // check might be unnecessary, as placeBet() already checks for sufficient funds
             if (additionalBet != null && additionalBet.compareTo(BigDecimal.ZERO) > 0) {
@@ -175,12 +201,14 @@ public class GameEngine {
                     break;
                 }
                 totalBets = totalBets.add(additionalBet);
+                gameView.showTotalBets(totalBets);
             }
 
             // Force hit for hands < 17
             if (player.getHandValue() < 17) {
                 gameView.displayForcedHit(player);
                 player.drawCard(deck);
+                gameView.logEvent(player.getPlayerName(), Constants.DRAW_CARD_MSG);
                 gameView.showPlayerHand(player); // Update the hand display
                 try { Thread.sleep(2000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
                 continue;
@@ -190,10 +218,13 @@ public class GameEngine {
             boolean wantsToHit = gameView.promptYesNo("Do you wish to draw another card?");
             if (wantsToHit) {
                 player.drawCard(deck);
+                gameView.logEvent(player.getPlayerName(), Constants.DRAW_CARD_MSG);
                 gameView.showPlayerHand(player); // Update the hand display
                 // Pause so the user can see the card before the next prompt or bust message
                 try { Thread.sleep(2000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
             } else {
+                gameView.displayMessage(player.getPlayerName() + " stands.");
+                gameView.logEvent(player.getPlayerName(), "Stands");
                 break;
             }
         }
@@ -201,12 +232,19 @@ public class GameEngine {
     }
 
     private void dealerTurn() {
+
         gameView.showDealerHand(dealer, false);
+        if (dealer.getHand().getHandValue() >= 17) {
+            gameView.displayMessage("Dealer stands.");
+            gameView.logEvent("Dealer", "Stands");
+            return;
+        }
         while (dealer.getHand().getHandValue() < 17) {
-            try { Thread.sleep(800); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+            try { Thread.sleep(2000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
             dealer.drawCard(deck);
+            gameView.logEvent("Dealer", Constants.DRAW_CARD_MSG);
             gameView.showDealerHand(dealer, false); // Update the hand display
         }
-    }
 
+    }
 }

@@ -40,16 +40,18 @@ public class Player extends AbstractPlayer {
         return balance.compareTo(amount) >= 0;
     }
 
-    public BigDecimal getCurrentBet() {
-        return bet;
-    }
-
     public BigDecimal getBalance() {
         return balance;
     }
 
     public void setBalance(BigDecimal newBalance) {
         balance = newBalance;
+    }
+
+    public void resetPlayer() {
+        balance = Constants.STARTING_BALANCE;
+        bet = BigDecimal.ZERO;
+        clearHand();
     }
 
     public void winBet(BigDecimal totalBets) {

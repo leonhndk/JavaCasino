@@ -9,7 +9,11 @@ import de.esg.java.ausbildung.honl.game.gui.dialogs.YesNoDialog;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.table.DefaultTableModel;
@@ -24,19 +28,20 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
     private JButton saveButton;
     private JButton loadButton;
     private final Font CASINO_FONT = new Font("Serif", Font.BOLD, 18);
-    private final Font LOG_FONT = new Font("Serif", Font.PLAIN, 14);
     private final JLabel playerHandLabel;
     private final JLabel playerBalanceLabel;
     private final JLabel playerHandValueLabel;
     private final JLabel dealerHandValueLabel;
     private final JPanel playerCardsPanel;
     private final JPanel dealerCardsPanel;
+    private final JLabel betTotalLabel;
+    private final JFileChooser fileChooser;
 
 
     public MainFrame () {
         // Initialize components that need to be created in the constructor
         String[] columnNames = {"Timestamp", "Player", "Action"};
-        DefaultTableModel logTableModel = new DefaultTableModel(columnNames, 10);
+        DefaultTableModel logTableModel = new DefaultTableModel(columnNames, 0);
         this.logTable = new JTable(logTableModel);
         this.playerCardsPanel = createCardsPanel();
         this.dealerCardsPanel = createCardsPanel();
@@ -47,11 +52,14 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
         this.dealerHandValueLabel.setForeground(Constants.CASINO_GOLD);
         this.playerBalanceLabel = new JLabel("Player Balance: 0.00 €");
         this.playerBalanceLabel.setForeground(Constants.CASINO_GOLD);
+        this.betTotalLabel = new JLabel("Bet total: 0.00 €");
+        betTotalLabel.setForeground(Constants.CASINO_GOLD);
+        this.fileChooser = new JFileChooser(System.getProperty("user.dir"));
+        fileChooser.setDialogTitle("Load Game Save");
         initializeGUI();
     }
 
     public void initializeGUI() {
-        UIManager.put("Button.focusPainted", false);
         setTitle("Blackjack Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -67,6 +75,10 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
     }
     private JPanel createLogPanel() {
         JPanel logPanel = new JPanel(new BorderLayout());
+        logPanel.setBackground(Constants.CASINO_RED);
+        logPanel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+        logTable.setFont(CASINO_FONT);
+        logTable.setForeground(Constants.CASINO_GOLD);
         logTable.setEnabled(false);
         logTable.setBackground(Constants.CASINO_RED);
         logTable.setGridColor(Constants.CASINO_GOLD);
@@ -75,8 +87,9 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
         tableHeader.setBackground(Constants.CASINO_GREEN);
         tableHeader.setForeground(Constants.CASINO_GOLD);
         tableHeader.setFont(CASINO_FONT);
+        logTable.setRowHeight(CASINO_FONT.getSize() + 10);
         int headerHeight = tableHeader.getPreferredSize().height;
-        int tableContentHeight = logTable.getRowHeight() * logTable.getRowCount();
+        int tableContentHeight = logTable.getRowHeight() * 15;
         int preferredHeight = headerHeight + tableContentHeight;
         int preferredWidth = logTable.getPreferredSize().width;
         logPanel.add(tableHeader, BorderLayout.NORTH);
@@ -171,7 +184,9 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
         topPanel.add(loadButton);
         topPanel.add(new JSeparator(SwingConstants.VERTICAL));
         playerBalanceLabel.setFont(CASINO_FONT);
+        betTotalLabel.setFont(CASINO_FONT);
         topPanel.add(playerBalanceLabel);
+        topPanel.add(betTotalLabel);
         return topPanel;
     }
 
@@ -187,32 +202,37 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
             loadButton.setEnabled(false);
             new Thread(() -> {
                 try {
-                    gameEngine.playGame();
+                    gameEngine.playNewGame();
                 } finally {
                     SwingUtilities.invokeLater(() -> {
                         playerCardsPanel.removeAll();
+                        playerCardsPanel.repaint();
                         dealerCardsPanel.removeAll();
+                        dealerCardsPanel.repaint();
                         startButton.setEnabled(true);
                         loadButton.setEnabled(true);
                     });
                 }
                 }) .start();
         } else if (e.getSource() == saveButton) {
-            // Save game logic
-//            NameInputDialog.nameInput(this);
-            System.out.println("Save Game button clicked");
+            displayMessage("Save feature not yet implemented.");
         } else if (e.getSource() == loadButton) {
-//            BetInputDialog.promptCurrencyInput(this);
-            // Load game logic
-//            int returnValue = fileChooser.showOpenDialog(this);
-//            if (returnValue == JFileChooser.APPROVE_OPTION) {
-//                // Handle file selection
-//                String selectedFile = fileChooser.getSelectedFile().getAbsolutePath();
-//                Path filePath = Paths.get(selectedFile);
-//                SaveUtils.loadSavedGame(filePath);
-//            } else {
-//                System.out.println("File selection cancelled.");
-//            }
+            int result = fileChooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                startButton.setEnabled(false);
+                loadButton.setEnabled(false);
+                new Thread(() -> {
+                    try {
+                        gameEngine.loadAndPlay(selectedFile.toPath());
+                    } finally {
+                        SwingUtilities.invokeLater(() -> {
+                            startButton.setEnabled(true);
+                            loadButton.setEnabled(true);
+                        });
+                    }
+                }).start();
+            }
         }
     }
 
@@ -241,7 +261,6 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
 
     @Override
     public BigDecimal promptPlayerBet(BigDecimal maxBet) {
-
         return BetInputDialog.promptCurrencyInput(this, maxBet);
     }
 
@@ -311,5 +330,34 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
     @Override
     public boolean promptSaveGame() {
         return YesNoDialog.promptYesNo(this, "Would you like to save this game state?") == JOptionPane.YES_OPTION;
+    }
+
+    @Override
+    public void updatePlayerName(String name) {
+        SwingUtilities.invokeLater(() -> playerHandLabel.setText(name + "'s Hand"));
+    }
+
+    @Override
+    public void showTotalBets(BigDecimal totalBets) {
+        SwingUtilities.invokeLater(() -> betTotalLabel.setText("Bet total: " + totalBets + " €"));
+    }
+
+    @Override
+    public void logEvent(String actor, String action) {
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                DefaultTableModel model = (DefaultTableModel) logTable.getModel();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+                String timestamp = now.format(formatter);
+                model.addRow(new Object[] {timestamp, actor, action});
+                if (model.getRowCount() > 15) {
+                    model.removeRow(0);
+                }
+            });
+        } catch (InterruptedException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
     }
 }

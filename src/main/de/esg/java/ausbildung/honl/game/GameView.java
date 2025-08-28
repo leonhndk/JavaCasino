@@ -27,4 +27,11 @@ public interface GameView {
     void displayForcedHit(Player player);
 
     boolean promptSaveGame();
+
+    void updatePlayerName(String name);
+
+    void showTotalBets(BigDecimal totalBets);
+
+    void logEvent (String actor, String action);
+
 }

@@ -11,7 +11,7 @@ public class Constants {
 
 	public static final String BLACKJACK_MSG = "Blackjack!";
 	public static final String FILE_NAME = "Kartenspiel";
-	public static final String BALANCE_REGEX = "\\b[\\w\\s]+'s balance: \\d+\\.\\d{2} €";
+	public static final String BALANCE_REGEX = "Balance:\\d+\\.\\d{2} €";
 	public static final String CARD_REGEX = "[A-Z]{3,5} of [A-Z]{5,8}";
 	public static final String USER_HOME = System.getProperty("user.home");
 	public static final String DIRECTORY = USER_HOME + File.separator + "JavaJack";
@@ -32,4 +32,5 @@ public class Constants {
 	public static final Color CASINO_GREEN = new Color(0x2d543d);
 	public static final Color CASINO_RED = new Color(0x952d28);
 	public static final Color CASINO_GOLD = new Color(0xD4AF37);
+	public static final String DRAW_CARD_MSG = "draws a card.";
 }
