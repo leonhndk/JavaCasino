@@ -32,10 +32,6 @@ public class Player extends AbstractPlayer {
         return playerName;
     }
 
-    public int getHandValue() {
-        return getHand().getHandValue();
-    }
-
     public boolean checkSufficientFunds(BigDecimal amount) {
         return balance.compareTo(amount) >= 0;
     }

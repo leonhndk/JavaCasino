@@ -6,7 +6,7 @@ import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-
+        // use command line arguments to determine mode
         if (args.length > 0) {
             // Run in console mode
             consoleMode();

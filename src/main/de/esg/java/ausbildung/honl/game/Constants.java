@@ -11,15 +11,8 @@ public class Constants {
 
 	public static final String BLACKJACK_MSG = "Blackjack!";
 	public static final String FILE_NAME = "Kartenspiel";
-	public static final String BALANCE_REGEX = "Balance:\\d+\\.\\d{2} €";
+	public static final String BALANCE_REGEX = "^Balance: \\d+\\.\\d{2} €";
 	public static final String CARD_REGEX = "[A-Z]{3,5} of [A-Z]{5,8}";
-	public static final String USER_HOME = System.getProperty("user.home");
-	public static final String DIRECTORY = USER_HOME + File.separator + "JavaJack";
-	//public static final String FILE_PATH_SAFE = SaveUtils.createAndGetDirectory(Paths.get(DIRECTORY)) + File.separator + FILE_NAME;
-	public static final Path filePath = Paths.get(DIRECTORY, Constants.FILE_NAME);
-	public static final String PLAYER_SCORE = "Player score:";
-	public static final String DEALER_SCORE = "Dealer score:";
-	public static final String LOAD_GAME_MSG = "Saved game available. Do you want to continue?";
 	public static final String WELCOME_MSG = "Welcome to the Blackjack Table at ESG-Casino!";
 	public static final BigDecimal MAX_BET = new BigDecimal("2.00");
 	public static final BigDecimal BUY_IN = new BigDecimal("0.50");
@@ -32,5 +25,6 @@ public class Constants {
 	public static final Color CASINO_GREEN = new Color(0x2d543d);
 	public static final Color CASINO_RED = new Color(0x952d28);
 	public static final Color CASINO_GOLD = new Color(0xD4AF37);
-	public static final String DRAW_CARD_MSG = "draws a card.";
+	public static final String DRAW_CARD_MSG = "Draws a card";
+	public static final String WIN_ROUND_MSG = "Win round";
 }

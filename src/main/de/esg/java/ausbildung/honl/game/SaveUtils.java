@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class SaveUtils {
 
 	public static Path getSavePath() {
-		return Paths.get(System.getProperty("user.home"), "JavaJack");
+		return Paths.get(System.getProperty("user.home"), "JavaJack", Constants.FILE_NAME);
 	}
 	public static boolean gameSaveExists() {
 		return Files.exists(getSavePath());
