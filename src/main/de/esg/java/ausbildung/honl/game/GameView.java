@@ -20,8 +20,6 @@ public interface GameView {
 
     boolean promptYesNo(String message);
 
-    void showCardDrawn(AbstractPlayer abstractPlayer);
-
     void displayBuyInMsg();
 
     void displayForcedHit(Player player);

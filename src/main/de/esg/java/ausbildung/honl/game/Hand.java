@@ -16,15 +16,6 @@ public class Hand {
     return Collections.unmodifiableList(cards);
     }
 
-    public Card getLastCard() {
-        try {
-            return cards.get(cards.size() - 1);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public int getHandValue () {
         int sum = 0;
         for (Card card : cards) {
@@ -39,7 +30,6 @@ public class Hand {
 
         return sum;
     }
-
 
     public boolean isBlackjack () {
         return cards.size() == 2 && getHandValue() == 21;
@@ -59,16 +49,6 @@ public class Hand {
         for (Card card : cards) {
             sb.append(card.toString()).append("\t");
         }
-        return sb.toString().trim();
-    }
-
-    public String consoleString (boolean hideFirstCard) {
-        StringBuilder sb = new StringBuilder();
-        for (Card card : cards) {
-            if(hideFirstCard)
-                sb.append(card.consoleString());
-        }
-        sb.append("Total hand value: ").append(getHandValue());
         return sb.toString().trim();
     }
 }

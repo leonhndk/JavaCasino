@@ -7,25 +7,30 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+/**
+ * Base class for custom dialogs
+ */
 public abstract class BaseDialog extends JDialog {
-    protected final Font dialogFont = new Font("Serif", Font.PLAIN, 18);;
+
+    // protected access for subclasses
+    protected final Font dialogFont = new Font("Serif", Font.PLAIN, 18);
     protected final Color CASINO_RED = Constants.CASINO_RED;
     protected final Color CASINO_GREEN = Constants.CASINO_GREEN;
     protected final Color CASINO_GOLD = Constants.CASINO_GOLD ;
     protected Border dialogBorder;
     protected JLabel messageLabel;
-
-    // Result tracking - helps us know what the user chose
+    // track user choice
     protected int result = JOptionPane.CANCEL_OPTION;
 
     public BaseDialog(Frame parent, String message) {
+        // null as title for undecorated dialog
         super(parent, null, true); // Modal dialog
         dialogBorder = BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(CASINO_GOLD, 2),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setUndecorated(true);
         getContentPane().setBackground(CASINO_RED);
-        // Create the main panel with our custom border
+        // Create the main panel with custom border
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(dialogBorder);
         mainPanel.setBackground(CASINO_RED);
@@ -35,19 +40,18 @@ public abstract class BaseDialog extends JDialog {
         }
         // Build the specific content (implemented by subclasses)
         buildContent(mainPanel);
-
         add(mainPanel);
         pack();
         setLocationRelativeTo(getParent());
     }
 
-    /**
-     * Each dialog type implements this to create its specific content
-     */
     protected abstract void buildContent(JPanel mainPanel);
 
     /**
-     * Utility method to create consistently styled buttons
+     * helper method to create consistently styled buttons
+     * @param text button text
+     * @param listener for button
+     * @return styled JButton
      */
     protected JButton createButton(String text, ActionListener listener) {
         JButton button = new JButton(text);
@@ -61,9 +65,6 @@ public abstract class BaseDialog extends JDialog {
         return button;
     }
 
-    /**
-     * Utility method to create consistently styled labels
-     */
     protected JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(dialogFont);

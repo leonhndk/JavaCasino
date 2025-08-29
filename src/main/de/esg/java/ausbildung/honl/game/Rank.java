@@ -7,7 +7,7 @@ public enum Rank {
     private final int cardValue;
     private final String label;
 
-    private Rank(int cardValue, String label) {
+    Rank(int cardValue, String label) {
         this.cardValue = cardValue;
         this.label = label;
     }

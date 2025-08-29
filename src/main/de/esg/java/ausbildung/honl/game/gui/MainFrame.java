@@ -51,7 +51,7 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
         this.playerHandValueLabel.setForeground(Constants.CASINO_GOLD);
         this.dealerHandValueLabel = new JLabel("Hand Value: 0");
         this.dealerHandValueLabel.setForeground(Constants.CASINO_GOLD);
-        this.playerBalanceLabel = new JLabel("Player Balance: 0.00 €");
+        this.playerBalanceLabel = new JLabel(Constants.BALANCE_ZERO);
         this.playerBalanceLabel.setForeground(Constants.CASINO_GOLD);
         this.betTotalLabel = new JLabel("Bet total: 0.00 €");
         betTotalLabel.setForeground(Constants.CASINO_GOLD);
@@ -220,6 +220,7 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
         dealerCardsPanel.repaint();
         playerHandValueLabel.setText("Hand Value: 0");
         dealerHandValueLabel.setText("Hand Value: 0");
+        playerBalanceLabel.setText(Constants.BALANCE_ZERO);
         betTotalLabel.setText("Bet total: 0.00 €");
         startButton.setEnabled(true);
         loadButton.setEnabled(true);
@@ -346,11 +347,6 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
     }
 
     @Override
-    public void showCardDrawn(AbstractPlayer abstractPlayer) {
-
-    }
-
-    @Override
     public void displayForcedHit(Player player) {
         String name = "Player";
         if (player.getPlayerName() != null && !player.getPlayerName().isEmpty()) {
@@ -379,6 +375,9 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
         SwingUtilities.invokeLater(() -> betTotalLabel.setText("Bet total: " + totalBets + " €"));
     }
 
+    /**
+     * Log game events to the log table with timestamp, actor and action with last 15 events
+     */
     @Override
     public void logEvent(String actor, String action) {
         try {
@@ -393,8 +392,7 @@ public class MainFrame extends JFrame implements ActionListener, GameView {
                 }
             });
         } catch (InterruptedException | InvocationTargetException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
-
     }
 }

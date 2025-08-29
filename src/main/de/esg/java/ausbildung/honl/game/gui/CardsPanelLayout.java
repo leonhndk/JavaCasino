@@ -21,7 +21,6 @@ public class CardsPanelLayout implements LayoutManager {
         }
         Insets insets = parent.getInsets();
         // get available width and height accounting for insets
-        // Padding on the left and right of the panel
         int availableWidth = parent.getWidth() - insets.left - insets.right - horizontalPadding * 2;
         // Padding on the top and bottom of the panel
         int availableHeight = parent.getHeight() - insets.top - insets.bottom - verticalPadding * 2;
@@ -29,16 +28,14 @@ public class CardsPanelLayout implements LayoutManager {
         int totalSpacing = (maxCardCount - 1) * spacing;
         int cardWidth = (availableWidth - totalSpacing) / maxCardCount;
         int cardHeight = (int) (cardWidth / aspectRatio);
-
         // set max height to panel height if card height exceeds available height
         if (cardHeight > availableHeight) {
             cardHeight = availableHeight;
             cardWidth = (int) (cardHeight * aspectRatio);
         }
-
         // Center vertically
         int yPosition = insets.top + verticalPadding + (availableHeight - cardHeight) / 2;
-        // order from left to right
+        // order left to right
         int xPosition = insets.left + horizontalPadding;
         for (Component comp : parent.getComponents()) {
             comp.setBounds(xPosition, yPosition, cardWidth, cardHeight);
@@ -47,10 +44,10 @@ public class CardsPanelLayout implements LayoutManager {
     }
 
     /**
-     * Returns the preferred size of the container based on hardcoded card dimension to determine window size
+     * Returns preferred size of the container based on card dimension to determine window size
      *
      * @param parent the container
-     * @return the preferred size of the container
+     * @return preferred size of the container needed for pack()
      */
     @Override
     public Dimension preferredLayoutSize(Container parent) {
@@ -71,7 +68,9 @@ public class CardsPanelLayout implements LayoutManager {
                 totalHeight + insets.top + insets.bottom
         );
     }
-
+    /**
+     * Minimum size should be same as preferred size
+     */
     @Override
     public Dimension minimumLayoutSize(Container parent) {
         return preferredLayoutSize(parent);

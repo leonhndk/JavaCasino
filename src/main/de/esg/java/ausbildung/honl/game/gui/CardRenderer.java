@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * helper class to render playing cards as JPanels with factory methods
+ * helper class to render playing cards as JPanels
  */
 public final class CardRenderer {
 
@@ -34,12 +34,11 @@ public final class CardRenderer {
     }
 
     /**
-     * Creates and returns a JPanel that visually represents a playing card.
-     * This is the primary method to be used from outside this class.
+     * Creates and returns a JPanel that represents a card, main entry point for rendering a card.
      *
-     * @param card     The Card object to render. If null, it will render a face-down card.
-     * @param faceDown
-     * @return A configured JPanel representing the card.
+     * @param card The Card object to render.
+     * @param faceDown true for initial deal to dealer
+     * @return JPanel for the card.
      */
     public static JPanel createCardView(Card card, boolean faceDown) {
         JPanel cardView = new JPanel(new BorderLayout(5, 5));
@@ -71,10 +70,11 @@ public final class CardRenderer {
 
     /**
      * Load an ImageIcon for suit and cache it
-     * @param suit The suit to load the icon for.
+     * @param suit to load the icon for
      * @return ImageIcon
      */
     private static ImageIcon loadSuitIcon(Suit suit) {
+        // suit enum as key for easy access
         // Check cache for icon, return if found
         if (ICON_CACHE.containsKey(suit)) {
             return ICON_CACHE.get(suit);
@@ -111,7 +111,7 @@ public final class CardRenderer {
     /**
      * Create a JPanel with a 5x3 grid layout, add suit symbols or placeholders panels according to layoutMap.
      * @param layoutMap map with point coordinates as keys and JPanel components as values.
-     * @return A JPanel representing the card with suit symbols.
+     * @return A JPanel for the card with suit symbols
      */
     private static JPanel createGridPanel(Map<Point, Component> layoutMap) {
         JPanel gridPanel = new JPanel(new GridLayout(5, 3));
@@ -122,6 +122,7 @@ public final class CardRenderer {
                     gridPanel.add(component);
                 }
                 else {
+                    // placeholder panel to keep grid layout
                     JPanel emptyPanel = new JPanel();
                     emptyPanel.setOpaque(false);
                     emptyPanel.setForeground(Color.WHITE);
@@ -221,6 +222,7 @@ public final class CardRenderer {
                 layoutMap.put(new Point(1, 2), getIconLabel(suitIcon));
                 break;
         }
+        // set color for suits
         for (Component component : layoutMap.values()) {
             if (redSuit) {
                 component.setForeground(Color.RED);

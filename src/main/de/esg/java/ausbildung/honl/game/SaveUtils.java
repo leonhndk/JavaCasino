@@ -23,19 +23,21 @@ public class SaveUtils {
 		ArrayList<Card> cardStack;
 		// check file before trying to parse cards and balance, savedGame may be null
         if (savedGame == null || !validateSaveData(savedGame)) {
-			// handle logging here or in gameView instance?
 			return null;
 		}
 		String playerName = savedGame.get(0);
 		BigDecimal balance = readBalance(savedGame.get(1));
 		cardStack = loadCardStack(savedGame);
 		if (balance == null || cardStack.isEmpty()) {
-			// handle logging here or in gameView instance?
 			return null;
 		}
 		return new SaveData(playerName, balance, cardStack);
 	}
-	
+	/**
+	 * read balance from save file line
+	 * @param line String with balance
+	 * @return BigDecimal or null if parsing fails
+	 */
 	private static BigDecimal readBalance (String line) {
 		Pattern pattern = Pattern.compile("\\d+\\.\\d{2}");
 		Matcher matcher = pattern.matcher(line);
@@ -43,8 +45,7 @@ public class SaveUtils {
 			try {
 				return new BigDecimal(matcher.group());
 			} catch (NumberFormatException e) {
-				// logging ?
-				e.printStackTrace();
+				System.err.println(e.getMessage());
 				return null;
 			}
 		}
@@ -52,8 +53,7 @@ public class SaveUtils {
 	}
 
 	/**
-	 * load last saved card stack
-	 *
+	 * load saved card stack
 	 * @return ArrayList
 	 */
 	private static ArrayList<Card> loadCardStack(ArrayList<String> savedGame) {
@@ -68,8 +68,7 @@ public class SaveUtils {
 	}
 
 	/**
-	 * @param card representation of card from save file read in loadCardStack
-	 *               method
+	 * @param card String for card from save file
 	 * @return card object
 	 */
 	private static Card readCard(String card) {
@@ -99,10 +98,9 @@ public class SaveUtils {
 	}
 
 	/**
-	 * check for uncorrupted save game file
-	 *
+	 * check for uncorrupted game file
 	 * @param  gameSave read from the file
-	 * @return boolean
+	 * @return true if validation succeeds
 	 */
 	private static boolean validateSaveData(ArrayList<String> gameSave) {
 		boolean balanceMatches = false;
@@ -114,7 +112,6 @@ public class SaveUtils {
 		// match pattern for saved card stack
 		for (int i = 2; i < gameSave.size(); i++) {
 			if (!gameSave.get(i).matches(Constants.CARD_REGEX)) {
-				// logging ?
 				stackMatches = false;
 				break;
 			}
@@ -130,14 +127,19 @@ public class SaveUtils {
 				gameSave.add(line);
 			}
 		} catch (IOException e) {
-			// logging ?
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 			return null;
 		}
 		return gameSave;
 	}
 
-
+	/**
+	 * create save data from current game
+	 * @param playerBalance current player balance
+	 * @param playerName current player name
+	 * @param deck current deck
+	 * @return ArrayList to write to file
+	 */
 	private static ArrayList<String> createSaveData (BigDecimal playerBalance, String playerName, Deck deck) {
 		ArrayList<String> gameSave = new ArrayList<>();
 		ArrayList<Card> cards = deck.getCards();
@@ -148,8 +150,15 @@ public class SaveUtils {
 		}
 		return gameSave;
 	}
-	private static boolean writeSaveData (ArrayList<String> saveData, String fileName) {
-		try (FileWriter writer = new FileWriter(fileName)) {
+
+	/**
+	 * write save data to file
+	 * @param saveData ArrayList of strings to write
+	 * @param filePath path to file
+	 * @return true if write succeeded
+	 */
+	private static boolean writeSaveData (ArrayList<String> saveData, String filePath) {
+		try (FileWriter writer = new FileWriter(filePath)) {
 			for (String line : saveData) {
 				writer.write(line + "\n");
 			}
@@ -157,32 +166,25 @@ public class SaveUtils {
 			return true;
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 			return false;
 		}
 	}
 
-//	/**
-//	 * create directory under user files to write save data to while checking
-//	 * existence thereof first
-//	 *
-//	 * @param dirPath
-//	 *
-//	 * @return String
-//	 */
-	public static String createDirectory(Path directoryPath) {
+	/**
+	 * check for directory or create directory under user files to write save data to
+	 * @param directoryPath path to directory
+	 */
+	public static void createDirectory(Path directoryPath) {
 		if (Files.exists(directoryPath)) {
 			// logging to be added later?
-			return directoryPath.toString();
+			return;
 		}
 		// create directory if it does not exist
 		try {
 			Files.createDirectories(directoryPath);
-			return directoryPath.toString();
 		} catch (IOException e) {
-			// logging ?
-			e.printStackTrace();
-			return null;
+			System.err.println(e.getMessage());
 		}
 	}
 

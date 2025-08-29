@@ -1,10 +1,7 @@
 package de.esg.java.ausbildung.honl.game;
 
 import java.awt.*;
-import java.io.File;
 import java.math.BigDecimal;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Constants {
 
@@ -27,4 +24,5 @@ public class Constants {
 	public static final Color CASINO_GOLD = new Color(0xD4AF37);
 	public static final String DRAW_CARD_MSG = "Draws a card";
 	public static final String WIN_ROUND_MSG = "Win round";
+	public static final String BALANCE_ZERO = "Balance: 0,00 €";
 }

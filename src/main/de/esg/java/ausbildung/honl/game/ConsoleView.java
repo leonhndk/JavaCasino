@@ -10,14 +10,10 @@ public class ConsoleView implements GameView {
 
 private final Scanner scanner;
 
-
     public ConsoleView() {
         this.scanner = new Scanner(System.in);
     }
 
-    /**
-     *
-     */
     @Override
     public void displayWelcomeMsg() {
         System.out.println(Constants.WELCOME_MSG);
@@ -32,9 +28,6 @@ private final Scanner scanner;
         System.out.println(player.getPlayerName() + " is forced to hit");
     }
 
-    /**
-     * @return String playerName
-     */
     @Override
     public String promptPlayerName() {
         boolean validInput = false;
@@ -56,9 +49,6 @@ private final Scanner scanner;
         return name;
     }
 
-    /**
-     * @param balance
-     */
     @Override
     public void showPlayerBalance(BigDecimal balance) {
         System.out.println("Your current balance is: " + balance + " €");
@@ -66,7 +56,7 @@ private final Scanner scanner;
 
     @Override
     public BigDecimal promptPlayerBet(BigDecimal maxBet) {
-        BigDecimal bet = BigDecimal.ZERO;
+        BigDecimal bet;
         System.out.println("Please specify amount you wish to bet (Maximum bet: " + maxBet + "€).");
         while (true) {
             String input = scanner.nextLine().trim();
@@ -91,10 +81,7 @@ private final Scanner scanner;
         }
     }
 
-    /**
-     * @param player
-     */
-    // make method abstract?
+    @Override
     public void showPlayerHand(Player player) {
         System.out.printf("%s's hand: ", player.getPlayerName());
         StringBuilder sb = new StringBuilder();
@@ -106,8 +93,9 @@ private final Scanner scanner;
     }
 
     /**
-     * @param dealer
-     * @param hideFirstCard
+     * Display dealer's hand
+     * @param dealer instance
+     * @param hideFirstCard true to hide first card on initial deal
      */
     @Override
     public void showDealerHand(Dealer dealer, boolean hideFirstCard) {
@@ -127,17 +115,15 @@ private final Scanner scanner;
         System.out.println(sb);
     }
 
-    /**
-     * @param message
-     */
     @Override
     public void displayMessage(String message) {
         System.out.println(message);
     }
 
     /**
-     * @param message
-     * @return
+     * Prompt user for yes/no input
+     * @param message to prompt with
+     * @return user choice
      */
     @Override
     public boolean promptYesNo(String message) {
@@ -159,24 +145,19 @@ private final Scanner scanner;
         return promptYesNo("Would you like to save your game? ");
     }
 
-    public void showCardDrawn (AbstractPlayer abstractPlayer) {
-        if (abstractPlayer instanceof Player) {
-            System.out.printf("%s drew %s\n", ((Player) abstractPlayer).getPlayerName(), abstractPlayer.getHand().getLastCard().toString());
-        } else if (abstractPlayer instanceof Dealer) {
-            System.out.printf("%s drew %s\n", "Dealer", abstractPlayer.getHand().getLastCard().toString());
-        }
-    }
-
     @Override
     public void updatePlayerName(String name) {
         System.out.println("Game loaded for player: " + name);
     }
 
     @Override
-    public void showTotalBets(BigDecimal totalBets) {
+    public void showTotalBets(BigDecimal totalBets) {}
 
-    }
-
+    /**
+     * Log game events with timestamp to standard error stream
+     * @param actor who performed action
+     * @param action description
+     */
     @Override
     public void logEvent(String actor, String action) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");

@@ -74,14 +74,12 @@ public class Player extends AbstractPlayer {
 
 
     @Override
-    public Card drawCard(Deck deck) {
+    public void drawCard(Deck deck) {
         try {
             Card card = deck.removeCard();
             getHand().addCard(card);
-            return card;
         } catch (NoSuchElementException e) {
-            e.printStackTrace();
-            return null;
+            System.err.println(e.getMessage());
         }
     }
 }
